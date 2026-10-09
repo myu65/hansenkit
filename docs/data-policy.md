@@ -14,7 +14,7 @@ are blocked pending asset-specific permission. MIT code licenses do not establis
 Do not download them into the project, train on them, distribute them, use them as coefficients,
 or generate public pseudo-labels from them. Local evaluation is also subject to the actual terms.
 
-User-supplied cleared CSV data may eventually be read locally with an explicit manifest and
+User-supplied cleared CSV data can be read locally with an explicit manifest and
 content hash. Private/company data and local model artifacts stay ignored. No upload command
 is supplied. Public trained weights are a separate release decision and need manifest review.
 

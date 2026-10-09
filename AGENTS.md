@@ -9,8 +9,9 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
 - Never import HSPiP coefficients, HSPiT Excel tables, HSP_SMILES.csv, proprietary company data,
   noncommercial weights, or derived pseudo-labels without asset-specific permission evidence.
   A repository's code license alone is not clearance for its tables, data, or weights.
-- Synthetic demos, teacher reproduction, and independent experimental evaluation are separate
-  label kinds, datasets, models, and report sections. Never describe synthetic/teacher metrics as real accuracy.
+- Keep synthetic, teacher and experimental training labels in separate datasets/model provenance.
+  A teacher-trained model may be evaluated on independent measurements in a separate report
+  recording both label kinds. Never describe synthetic/teacher agreement as real accuracy.
 - Keep local data/models in ignored directories. Do not upload them or log raw private records.
 - Normalize before grouping. Keep canonical duplicates and scaffold/polymer families within one split.
   Fit preprocessing, residual models, OOD references, and uncertainty using training/calibration only.

@@ -1,0 +1,10 @@
+{
+  "kind": "polymer",
+  "series_id": "example-peg-not-a-prediction",
+  "repeat_units": [{"smiles": "*CCO*", "mole_fraction": 1.0}],
+  "mn_g_mol": 1000,
+  "dispersity": 1.15,
+  "end_groups": [{"smiles": "*O", "count_per_chain": 1}, {"smiles": "*C", "count_per_chain": 1}],
+  "architecture": "linear",
+  "eo_po": {"eo_mean": 20, "po_mean": 0, "distribution": "unknown", "sequence": "block"}
+}

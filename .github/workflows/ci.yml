@@ -1,0 +1,32 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          version: '0.12.9'
+          enable-cache: true
+          python-version: ${{ matrix.python }}
+      - run: uv sync --locked --extra lightgbm
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest
+      - run: uv run hansenkit synthetic --out runs/ci-data
+      - run: uv run hansenkit compare --data runs/ci-data/synthetic.csv --manifest runs/ci-data/manifest.json --out runs/ci-models --include-lightgbm
+      - run: uv run hansenkit predict --model runs/ci-models/A-ridge.json --input examples/predict.csv --output runs/ci-predictions.csv
+      - run: uv build
+      # No local datasets, model artifacts or private reports are uploaded.

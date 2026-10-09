@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "dataset_id": "REPLACE_WITH_DATASET_ID",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "label_kind": "experimental",
+  "units": "MPa^0.5",
+  "source": "REPLACE_WITH_ORIGINAL_MEASUREMENT_SOURCE_AND_VERSION",
+  "license": "REPLACE_WITH_ASSET_SPECIFIC_TERMS",
+  "rights_status": "pending",
+  "permission_evidence": "REPLACE_WITH_PERMISSION_DOCUMENT_OR_URL",
+  "approved_by": "REPLACE_WITH_REVIEWER",
+  "local_evaluation_allowed": false,
+  "training_allowed": false,
+  "derived_labels_allowed": false,
+  "derived_weights_allowed": false,
+  "redistribution_allowed": false,
+  "confidential": false,
+  "temperature_k": 298.15,
+  "independent_measurements": true
+}

@@ -7,7 +7,62 @@ SMILESから独自の化学特徴量と構造表現を組み合わせ、将来�
 δD・δP・δHの出力を実験値・製品適合性の根拠に使わないでください。
 権利未確認の教師データ・係数表・外部重みを同梱しません。
 
-初期実装と実行方法はPoCのPRで追加します。開発方針は [AGENTS.md](AGENTS.md)、
-計画は [ロードマップ](docs/roadmap.md)、権利管理は [データ方針](docs/data-policy.md) を参照してください。
+動くものは、RDKitによる正規化、独自の官能基・原子所属特徴量、厳密な入力スキーマ、
+権利宣言とチェックサムを検証するローカルCSV読込み、骨格・系列分割、3成分評価、
+OOD・外挿判定、校正用データを分離した予測区間、CLIとCSV入出力です。
+
+| 方式 | 初期PoC |
+| --- | --- |
+| A | 官能基＋記述子＋Ridge回帰。LightGBMは追加オプション |
+| B | 固定Morgan fingerprint＋回帰の軽量代替。MoLFormerでの比較は未実装 |
+| C | 官能基の線形寄与＋骨格群を分離して作った残差の構造表現による補正 |
+
+MoLFormerはライセンス・重み・依存の確認が完了するまで無効です。確認済み固定Embeddingを
+ローカルCSVから受け取る接続口はあります。初回に外部重みをダウンロードしません。
+
+Python 3.11または3.12と [uv](https://docs.astral.sh/uv/) を使います。
+
+```sh
+git clone https://github.com/myu65/hansenkit.git
+cd hansenkit
+uv sync --locked
+uv run hansenkit synthetic --out runs/demo-data
+uv run hansenkit compare --data runs/demo-data/synthetic.csv --manifest runs/demo-data/manifest.json --out runs/demo-models
+uv run hansenkit predict --model runs/demo-models/A-ridge.json --input examples/predict.csv --output runs/demo-predictions.csv
+uv run pytest
+```
+
+`runs/demo-models/comparison.json` に同じ骨格分割でのMAE/RMSE/R²、OOD・外挿別の指標、
+区間幅と被覆率が出ます。`runs/demo-predictions.csv` は適用外の行を理由付きで拒否し、
+数値欄を空にします。例のエタノール・ベンゼンは学習データに含まれる場合があり、
+CSVの例は動作確認用です。精度評価は独立したテスト分割のレポートで行います。
+出力先が既にある場合は上書きせず、新しい名前を指定します。
+
+LightGBMも比較する場合は `uv sync --locked --extra lightgbm` を実行し、`compare` に
+`--include-lightgbm` を追加します。
+
+```sh
+uv run hansenkit features --smiles "CC(=O)OC"
+uv run hansenkit schema --output runs/input-schema.json
+uv run hansenkit validate --input examples/polymer.json
+uv run hansenkit train --data runs/demo-data/synthetic.csv --manifest runs/demo-data/manifest.json --mode C --model models/hybrid.json --report runs/hybrid-report.json
+```
+
+正式な教師データを使う際は [権利宣言の雛形](examples/cleared-manifest.template.json) と
+[データ方針](docs/data-policy.md) を読み、許諾確認済みのデータを `local/` に置いてください。
+必須CSV列は `sample_id,smiles,delta_d,delta_p,delta_h,label_kind`、単位はMPa^0.5です。
+任意列は `temperature_k` と `polymer_series`。初期温度は298.15 Kに限定します。
+外部の独立評価は `hansenkit evaluate --model ... --data ... --manifest ... --report ...` で実行し、
+教師再現性と実測評価を別レポートに記録します。
+
+高分子・EO/PO分布・末端基・Mnのスキーマを用意しましたが、高分子・長鎖EO/PO活性剤・
+イオン性分子・混合物への推算はまだ拒否します。Uni-Mol2、MiniMol、CheMeleon、QM9、
+OpenMM/RadonPy、GPU-MD、能動学習は今後の接続候補です。
+
+開発方針は [AGENTS.md](AGENTS.md)、[Codexで続ける手順](docs/codex.md)、
+[ロードマップ](docs/roadmap.md)、[実験条件と合成データの結果](docs/evaluation.md)、
+[権利・出典台帳](docs/rights-ledger.md)、[構成](docs/architecture.md) を参照してください。
+次の本格実験は、権利を確認した中性小分子の独立実測データでAを評価し、
+その後に確認済みMoLFormerを同じ分割でB/Cと比較することです。
 
 コードと独自の文書はMIT。依存ソフト・重み・数表・教師データの条件は別々に管理します。

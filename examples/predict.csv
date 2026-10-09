@@ -1,0 +1,8 @@
+sample_id,smiles,kind
+ethanol,CCO,molecule
+benzene,c1ccccc1,molecule
+ionic,C[N+](C)(C)C,molecule
+salt,CCO.[Na+],molecule
+repeat_unit,*CCO*,molecule
+eo_chain,CCCCCCCCOCCOCCOCCO,molecule
+invalid,invalid_smiles,molecule
