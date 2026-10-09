@@ -19,6 +19,10 @@ def add_encoder(parser):
     parser.add_argument("--encoder", choices=("morgan", "local", "molformer"), default="morgan")
     parser.add_argument("--embedding-csv")
     parser.add_argument("--embedding-manifest")
+    parser.add_argument("--checkpoint")
+    parser.add_argument("--checkpoint-review")
+    parser.add_argument("--encoder-batch-size", type=int, default=16)
+    parser.add_argument("--encoder-device", choices=("cpu", "cuda"), default="cpu")
 
 
 def add_training(parser):
@@ -31,11 +35,19 @@ def add_training(parser):
 
 
 def configured_encoder(args):
-    return get_encoder(args.encoder, args.embedding_csv, args.embedding_manifest)
+    return get_encoder(
+        args.encoder,
+        args.embedding_csv,
+        args.embedding_manifest,
+        args.checkpoint,
+        args.checkpoint_review,
+        args.encoder_batch_size,
+        args.encoder_device,
+    )
 
 
-def fit_and_report(dataset, split, args, mode, head="ridge"):
-    encoder = configured_encoder(args)
+def fit_and_report(dataset, split, args, mode, head="ridge", encoder=None):
+    encoder = encoder or configured_encoder(args)
     model = train_model(dataset, split.train, split.groups, mode, encoder, head, args.seed)
     model.provenance.update(
         {
@@ -159,6 +171,11 @@ def main(argv=None):
     )
     synthetic.add_argument("--out", required=True)
     synthetic.add_argument("--seed", type=int, default=42)
+    fetch = commands.add_parser(
+        "checkpoint-fetch", help="Explicitly fetch the audited encoder bytes"
+    )
+    fetch.add_argument("--out", required=True)
+    fetch.add_argument("--checkpoint-review", required=True)
     features = commands.add_parser(
         "features", help="Normalize and inspect atom ownership and features"
     )
@@ -205,6 +222,11 @@ def main(argv=None):
                     {"data": str(paths[0]), "manifest": str(paths[1]), "label_kind": "synthetic"}
                 )
             )
+        elif args.command == "checkpoint-fetch":
+            from .molformer import fetch_checkpoint
+
+            directory = fetch_checkpoint(args.out, args.checkpoint_review)
+            print(json.dumps({"checkpoint": str(directory), "network_requested_explicitly": True}))
         elif args.command == "features":
             coverage = atom_coverage(args.smiles)
             output = {**asdict(coverage), "coverage_fraction": coverage.fraction}
@@ -246,11 +268,12 @@ def main(argv=None):
                     raise ValueError("Comparison directory must be new or empty")
                 directory.mkdir(parents=True, exist_ok=True)
                 reports = {}
+                encoder = configured_encoder(args)
                 choices = [("A", "ridge"), ("B", "ridge"), ("C", "ridge")]
                 if args.include_lightgbm:
                     choices.append(("A", "lightgbm"))
                 for mode, head in choices:
-                    model, report = fit_and_report(dataset, split, args, mode, head)
+                    model, report = fit_and_report(dataset, split, args, mode, head, encoder)
                     name = f"{mode}-{head}"
                     model.save(directory / f"{name}.json")
                     reports[name] = report

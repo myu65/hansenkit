@@ -6,7 +6,8 @@
 - Strict molecule/polymer/EO-PO schema; refuse unsupported prediction types.
 - A: chemical features + ridge (optional LightGBM); B-proxy: frozen Morgan fingerprint + ridge;
   C-proxy: chemical linear contribution + group-cross-fitted structural residual correction.
-- Encoder interface for future licensed, fixed MoLFormer embeddings, disabled by default.
+- Licensed pinned frozen MoLFormer is now available as an explicit optional local adapter;
+  default Morgan path remains lightweight. Real checkpoint training on synthetic labels is recorded.
 - Scaffold/polymer-family splitting, 3-component MAE/RMSE/R², extrapolation/OOD and uncertainty diagnostics.
 - Cleared local CSV ingestion; deterministic synthetic CLI/CSV demonstration; tests and CI.
 
@@ -14,7 +15,7 @@
 
 - Clear a small neutral-molecule measured dataset and publish its provenance/allowed uses.
 - Pre-register scaffold holdouts, units, temperature handling and calibration; compare A/B/C over seeds.
-- Review exact MoLFormer-XL-both-10pct revision, weights and complete dependencies; implement frozen adapter.
+- Exact MoLFormer release review and frozen adapter are implemented; evaluate B/C on cleared measurements.
 - Report teacher reproduction separately if an authorized teacher is used. Never replace real accuracy with it.
 
 ## M2 — Polymers and long-chain surfactants

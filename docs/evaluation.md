@@ -53,7 +53,31 @@ A-ridge empirical group coverage was 1.000 /0.667 /1.000 despite nominal 0.8, il
 coverage must be measured and why six test/calibration groups cannot establish dependable uncertainty.
 The full reports are reproducible from the README demo and stay local; no trained weights are published.
 
-## First substantive experiment
+## Frozen MoLFormer training run (2026-10-10)
+
+After reserving HSPiT reference identities/scaffolds, 253 synthetic rows remained (143/55/55
+train/calibration/test; 13/5/5 groups). No external HSP labels or coefficients were used. Encoder
+release/review is pinned as in [the MoLFormer audit](molformer-review.md). The encoder has 768
+fixed dimensions; only ridge/regression/residual heads are learned. These are synthetic pipeline
+scores and favor A's input vocabulary, not measured performance.
+
+| Path | δD MAE | δP MAE | δH MAE |
+| --- | --- | --- | --- |
+| A ridge | 0.0708 | 0.1306 | 0.0870 |
+| A LightGBM | 0.2418 | 0.1587 | 0.1707 |
+| B frozen MoLFormer + ridge | 0.1825 | 0.3668 | 0.4951 |
+| C chemistry + MoLFormer residual | 0.1089 | 0.2177 | 0.1111 |
+| B Morgan control | 0.3905 | 0.3418 | 0.2381 |
+| C Morgan residual control | 0.1046 | 0.2033 | 0.1366 |
+
+Saved models were loaded independently and all component MAE/RMSE/R² reproduced. Real
+checkpoint embeddings were checked across independent initial random seeds, loads and batch
+sizes. Parameter/buffer values were compared to Safetensors, and frozen status was verified.
+The local bundle contains regression models, original synthetic data and reports; it excludes
+external checkpoint code/weights and HSPiT workbooks. True measured evaluation remains pending
+dataset permission and measurement provenance. See [Excel classification](hspit-classification.md).
+
+## First independent measured experiment
 
 Start [#2](https://github.com/myu65/hansenkit/issues/2) and [#4](https://github.com/myu65/hansenkit/issues/4):
 clear original neutral-molecule measurements with units/temperature and permitted uses, freeze

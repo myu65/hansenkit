@@ -19,6 +19,11 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   Schema support is not a scientific applicability claim. No guessed HSP fallback.
 - Pretrained encoders are off until weights, code, dependencies, exact revision, and execution
   permissions are documented. Do not silently download weights or execute remote model code.
+  The audited optional MoLFormer release can run through the explicit local checkpoint/review
+  flags; read docs/molformer-review.md. Never broaden its immutable code/weight allowlist casually.
+- Explicitly authorized local table inspection may classify structure/headers/identities without
+  training or publishing numerical data. Keep evaluation-only data roles enforced and original
+  measurement provenance/asset permission pending until evidence clears them.
 
 ## Development
 

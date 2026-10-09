@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "model_id": "ibm-research/MoLFormer-XL-both-10pct",
+  "revision": "361063d0ad524ef77cf39b08469f6be770dc550f",
+  "files": {
+    "README.md": "fff331c6a973fa6995662ac31354c702ac0f4805d494e7506b979a3a6cee6f44",
+    "config.json": "3ef9eaac8c7ca6282fd6256ed038d151bd4ff42a4ff855367e0d7197bbc1c284",
+    "configuration_molformer.py": "b88ea8d4b7b5e54f4f186cc7a230eff308928020a030f153a038fd12c05e3bed",
+    "modeling_molformer.py": "6f1ef72022de2c69e95661899422a7bb39a40a2cc5a6cb6216f14e9b7d84559c",
+    "model.safetensors": "0795977fe7192c4acdaf052f0e8464af57bc4bb59211271c5e61aaba2637b9c6",
+    "tokenizer.json": "3df1f2219653c44fac9fa03b7f788b372eb2544ecc176737bb9aca8411b471a5",
+    "tokenizer_config.json": "56f93dc43e4383fcfc6342e09d782ef38d48ef227215a4a92ff8762fd5b8ff3e"
+  },
+  "weights_license": "Apache-2.0",
+  "code_license": "Apache-2.0",
+  "rights_status": "approved",
+  "dependency_review": "approved",
+  "reviewed_local_code_execution_allowed": true,
+  "training_allowed": true,
+  "derived_weights_allowed": true,
+  "commercial_use_allowed": true,
+  "permission_evidence": "Publisher's pinned Apache-2.0 model card and source headers; docs/molformer-review.md; dependency-inventory.json. Original synthetic labels only; no external HSP labels/tables.",
+  "approved_by": "hansenkit release-specific source/license audit, 2026-10-10",
+  "runtime_versions": {
+    "torch": "2.14.1+cpu",
+    "transformers": "5.12.1",
+    "tokenizers": "0.22.2",
+    "safetensors": "0.8.0",
+    "huggingface-hub": "1.33.0"
+  }
+}

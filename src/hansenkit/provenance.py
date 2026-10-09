@@ -23,6 +23,7 @@ class DatasetManifest(StrictModel):
     dataset_id: str = Field(min_length=1)
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     label_kind: LabelKind
+    allowed_role: Literal["training", "evaluation_only"] = "training"
     units: Literal["MPa^0.5"] = UNITS
     source: str = Field(min_length=1)
     license: str = Field(min_length=1)
@@ -52,6 +53,8 @@ class DatasetManifest(StrictModel):
         return self
 
     def authorize(self, purpose: Literal["train", "evaluate"]) -> None:
+        if purpose == "train" and self.allowed_role == "evaluation_only":
+            raise ValueError("Evaluation-only datasets cannot be used for training")
         if self.rights_status != "approved":
             raise ValueError("Dataset rights are not approved")
         if purpose == "train" and not (self.training_allowed and self.derived_weights_allowed):

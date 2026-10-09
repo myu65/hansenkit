@@ -46,8 +46,10 @@ never train a head or residual. Hyperparameters are fixed for this initial plumb
 `Encoder.transform` and `metadata` support Morgan and approved local frozen-vector tables. The
 table carries weights/code licenses, dependency review, exact revision, hash and permitted uses.
 Model artifacts retain encoder identity and must reload with identical metadata. Missing vectors
-fail closed. `--encoder molformer` always fails with an explanation until issue #3 is resolved;
-there is no inference adapter or torch/transformers dependency in the default installation.
+fail closed. `--encoder molformer` requires the optional extra and explicit local checkpoint/
+review paths. The audited adapter produces fixed 768-dimensional vectors offline with exact
+tensor parity checks. `checkpoint-fetch` is an opt-in download; defaults still have no torch/
+transformers dependency. See [the pinned audit](molformer-review.md).
 Vector extraction, fit-on-training-only transformations of vectors and audit of any training data
 used by a user-supplied encoder are the operator's responsibility.
 

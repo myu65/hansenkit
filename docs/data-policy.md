@@ -11,8 +11,10 @@ not proof of ownership; maintainers must inspect the evidence before release.
 
 HSPiT `stefanis_data2.xlsx` / `fitting_data.xlsx` and HSP-predictions `data/HSP_SMILES.csv`
 are blocked pending asset-specific permission. MIT code licenses do not establish dataset clearance.
-Do not download them into the project, train on them, distribute them, use them as coefficients,
-or generate public pseudo-labels from them. Local evaluation is also subject to the actual terms.
+Do not train on them, distribute them, use them as coefficients or generate public pseudo-labels.
+Explicitly requested local structural inspection/classification may read headers and reserve
+molecular identities; keep workbooks outside the public repository. This is not numerical dataset
+clearance. Formal local evaluation still requires asset-specific terms and measurement provenance.
 
 User-supplied cleared CSV data can be read locally with an explicit manifest and
 content hash. Private/company data and local model artifacts stay ignored. No upload command
@@ -22,4 +24,5 @@ Synthetic pipeline tests, teacher reproduction tests and independent experimenta
 have separate label kinds and reports. Teacher agreement establishes only imitation of that
 teacher. Experimental truth must be independent of both training labels and the teacher.
 
-The rights ledger and follow-up review issues will be added in the PoC PR.
+The rights ledger and follow-up review issues are available in the repository. Evaluation-only
+manifests cannot authorize training even when other permission flags are mistakenly enabled.

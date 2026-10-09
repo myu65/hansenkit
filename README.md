@@ -14,11 +14,13 @@ OOD・外挿判定、校正用データを分離した予測区間、CLIとCSV�
 | 方式 | 初期PoC |
 | --- | --- |
 | A | 官能基＋記述子＋Ridge回帰。LightGBMは追加オプション |
-| B | 固定Morgan fingerprint＋回帰の軽量代替。MoLFormerでの比較は未実装 |
+| B | 固定Morgan表現、または確認済みMoLFormerの固定Embedding＋回帰 |
 | C | 官能基の線形寄与＋骨格群を分離して作った残差の構造表現による補正 |
 
-MoLFormerはライセンス・重み・依存の確認が完了するまで無効です。確認済み固定Embeddingを
-ローカルCSVから受け取る接続口はあります。初回に外部重みをダウンロードしません。
+MoLFormerの公開10%版を版番号・ファイルハッシュ・依存バージョンを固定して確認しました。
+追加オプションで有効化でき、重みを固定して回帰部分だけを学習します。
+既定ではMorgan表現を使い、外部重みを自動ダウンロードしません。
+[確認内容とMoLFormerの実行手順](docs/molformer-review.md) を参照してください。
 
 Python 3.11または3.12と [uv](https://docs.astral.sh/uv/) を使います。
 
@@ -52,6 +54,9 @@ uv run hansenkit train --data runs/demo-data/synthetic.csv --manifest runs/demo-
 [データ方針](docs/data-policy.md) を読み、許諾確認済みのデータを `local/` に置いてください。
 必須CSV列は `sample_id,smiles,delta_d,delta_p,delta_h,label_kind`、単位はMPa^0.5です。
 任意列は `temperature_k` と `polymer_series`。初期温度は298.15 Kに限定します。
+真のテスト用データは `allowed_role="evaluation_only"` と宣言すると、学習への使用を拒否します。
+HSPiTのExcelの分類と、評価用の分子・骨格を学習から除外した記録は
+[Excelの確認記録](docs/hspit-classification.md) にあります。係数表を実測正解とは扱いません。
 外部の独立評価は `hansenkit evaluate --model ... --data ... --manifest ... --report ...` で実行し、
 教師再現性と実測評価を別レポートに記録します。
 
