@@ -82,7 +82,15 @@ class LocalEmbeddingEncoder:
         }
 
 
-def get_encoder(name="morgan", path=None, manifest_path=None) -> Encoder:
+def get_encoder(
+    name="morgan",
+    path=None,
+    manifest_path=None,
+    checkpoint=None,
+    checkpoint_review=None,
+    batch_size=16,
+    device="cpu",
+) -> Encoder:
     if name == "morgan":
         return MorganEncoder()
     if name == "local":
@@ -90,9 +98,13 @@ def get_encoder(name="morgan", path=None, manifest_path=None) -> Encoder:
             raise ValueError("Local embeddings need a CSV and an approved embedding manifest")
         return LocalEmbeddingEncoder(path, manifest_path)
     if name == "molformer":
-        raise ValueError(
-            "MoLFormer is disabled pending exact weight/revision/dependency review; see issue #3"
-        )
+        if not checkpoint or not checkpoint_review:
+            raise ValueError(
+                "MoLFormer is disabled without explicit local checkpoint and review paths"
+            )
+        from .molformer import FrozenMolformerEncoder
+
+        return FrozenMolformerEncoder(checkpoint, checkpoint_review, batch_size, device)
     raise ValueError("Unknown encoder")
 
 

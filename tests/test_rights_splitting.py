@@ -52,6 +52,16 @@ def test_label_kind_contract(synthetic):
         )
 
 
+def test_reserved_evaluation_role_blocks_training_even_if_permissions_are_misconfigured(synthetic):
+    _, dataset, _ = synthetic
+    manifest = type(dataset.manifest).model_validate(
+        dataset.manifest.model_dump() | {"allowed_role": "evaluation_only"}
+    )
+    manifest.authorize("evaluate")
+    with pytest.raises(ValueError, match="Evaluation-only"):
+        manifest.authorize("train")
+
+
 def test_scaffold_and_canonical_duplicate_isolation(synthetic):
     _, dataset, split = synthetic
     partitions = (split.train, split.calibration, split.test)

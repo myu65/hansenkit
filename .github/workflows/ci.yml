@@ -30,3 +30,16 @@ jobs:
       - run: uv run hansenkit predict --model runs/ci-models/A-ridge.json --input examples/predict.csv --output runs/ci-predictions.csv
       - run: uv build
       # No local datasets, model artifacts or private reports are uploaded.
+  encoder-contract:
+    name: optional CPU encoder contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0d8abe699bfb85fec6de9f7adb5ae17292296ff # v6
+        with:
+          version: '0.12.9'
+          enable-cache: true
+          python-version: '3.12'
+      - run: uv sync --locked --extra molformer
+      - run: uv run --extra molformer pytest tests/test_molformer_contract.py
+      # Tiny authored tensors only; no external checkpoint download/execution in CI.
