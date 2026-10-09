@@ -1,3 +1,4 @@
+import hashlib
 import io
 import json
 from pathlib import Path
@@ -9,6 +10,7 @@ from hansenkit.encoders import get_encoder
 from hansenkit.molformer import (
     CheckpointReview,
     FrozenMolformerEncoder,
+    _load_reviewed_source,
     fetch_checkpoint,
     load_encoder_tensors,
     nonisomeric_smiles,
@@ -134,3 +136,15 @@ def test_strict_tensor_loading_restores_pretrained_values(
     safetensors.save_file({"molformer.weight": expected["molformer.weight"]}, bad)
     with pytest.raises(ValueError, match="architecture"):
         load_encoder_tensors(torch.nn.Linear(3, 2), bad)
+
+
+def test_changed_reviewed_source_is_refused_before_execution(tmp_path):
+    path = tmp_path / "reviewed.py"
+    source = b"VALUE = 17\n"
+    path.write_bytes(source)
+    digest = hashlib.sha256(source).hexdigest()
+    module = _load_reviewed_source("_hansenkit_test_reviewed_source", path, digest)
+    assert module.VALUE == 17
+    path.write_text("raise AssertionError('changed source must never execute')")
+    with pytest.raises(ValueError, match="changed before execution"):
+        _load_reviewed_source("_hansenkit_test_unverified_source", path, digest)
