@@ -33,7 +33,7 @@ packages = ["src/hansenkit"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-ra --basetemp=.pytest_cache/tmp"
+addopts = "-ra --basetemp=.pytest_tmp"
 
 [tool.ruff]
 line-length = 100

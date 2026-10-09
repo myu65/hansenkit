@@ -23,5 +23,5 @@ end-to-end CLI experiment and package build. GPU and external encoder extraction
 The owner can add repository-specific review/branch rules later; no organization or global account
 settings are required or changed by the initial setup.
 
-Pytest temporary files stay in this checkout's ignored `.pytest_cache/tmp`, avoiding inherited
+Pytest temporary files stay in this checkout's ignored `.pytest_tmp`, avoiding inherited
 permissions on a user's shared temporary folder. Use a different `--basetemp` for concurrent local runs.
