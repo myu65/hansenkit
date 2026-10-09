@@ -22,3 +22,6 @@ CI covers Linux/Windows and Python 3.11/3.12, all default paths plus optional Li
 end-to-end CLI experiment and package build. GPU and external encoder extraction are not CI tasks.
 The owner can add repository-specific review/branch rules later; no organization or global account
 settings are required or changed by the initial setup.
+
+Pytest temporary files stay in this checkout's ignored `.pytest_cache/tmp`, avoiding inherited
+permissions on a user's shared temporary folder. Use a different `--basetemp` for concurrent local runs.
