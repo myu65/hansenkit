@@ -7,9 +7,12 @@ from dataclasses import replace
 import numpy as np
 import pytest
 
+from hansenkit.chemistry import chemical_features
+from hansenkit.encoders import LocalEmbeddingEncoder
 from hansenkit.evaluation import calibrate, component_metrics, evaluate
 from hansenkit.inference import predict_record
 from hansenkit.models import HSPModel, train_model
+from hansenkit.provenance import file_hash
 
 
 @pytest.mark.parametrize("mode", ["A", "B", "C"])
@@ -115,6 +118,83 @@ def test_optional_lightgbm_roundtrip(synthetic, tmp_path):
     model.save(path)
     query = tuple(data.smiles[i] for i in split.test)
     np.testing.assert_allclose(model.predict(query), HSPModel.load(path).predict(query))
+
+
+@pytest.mark.parametrize("mode", ["B", "C"])
+def test_cleared_local_frozen_vectors_model_roundtrip(synthetic, tmp_path, mode):
+    _, data, split = synthetic
+    path, manifest_path = tmp_path / "vectors.csv", tmp_path / "vectors-manifest.json"
+    with path.open("w", newline="") as stream:
+        writer = csv.writer(stream)
+        writer.writerow(["smiles", "e0", "e1", "e2"])
+        for smiles in data.smiles:
+            # Test-authored descriptor vectors, not external pretrained embeddings.
+            writer.writerow([smiles, *chemical_features(smiles)[-3:]])
+    manifest = {
+        "encoder_id": "test-original-descriptor-vectors",
+        "revision": "original-v1",
+        "sha256": file_hash(path),
+        "weights_license": "MIT",
+        "code_license": "MIT",
+        "dependency_review": "approved",
+        "rights_status": "approved",
+        "frozen": True,
+        "permission_evidence": "Original test-generated vectors from project structures",
+        "training_allowed": True,
+        "derived_weights_allowed": True,
+        "commercial_use_allowed": True,
+    }
+    manifest_path.write_text(json.dumps(manifest))
+    encoder = LocalEmbeddingEncoder(path, manifest_path)
+    model = train_model(data, split.train, split.groups, mode=mode, encoder=encoder)
+    model_path = tmp_path / f"{mode}.json"
+    model.save(model_path)
+    loaded = HSPModel.load(model_path)
+    query = tuple(data.smiles[i] for i in split.test)
+    np.testing.assert_allclose(model.predict(query, encoder), loaded.predict(query, encoder))
+    with pytest.raises(ValueError, match="Encoder identity"):
+        loaded.predict(query)
+
+
+def test_external_holdout_cli_rejects_training_overlap(synthetic, tmp_path):
+    paths, data, split = synthetic
+    model = train_model(data, split.train, split.groups)
+    model_path, holdout = tmp_path / "model.json", tmp_path / "holdout.csv"
+    model.save(model_path)
+    with paths[0].open() as stream:
+        reader = csv.DictReader(stream)
+        fields = reader.fieldnames
+        records = list(reader)
+    with holdout.open("w", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows([records[i] for i in split.test])
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        data.manifest.model_copy(update={"sha256": file_hash(holdout)}).model_dump_json()
+    )
+    report = tmp_path / "report.json"
+    args = [
+        sys.executable,
+        "-m",
+        "hansenkit.cli",
+        "evaluate",
+        "--model",
+        str(model_path),
+        "--data",
+        str(holdout),
+        "--manifest",
+        str(manifest_path),
+        "--report",
+        str(report),
+    ]
+    subprocess.run(args, check=True, capture_output=True)
+    assert json.loads(report.read_text())["metrics"]["rows"] == len(split.test)
+    args[args.index("--data") + 1] = str(paths[0])
+    args[args.index("--manifest") + 1] = str(paths[1])
+    result = subprocess.run(args, capture_output=True, text=True)
+    assert result.returncode == 2
+    assert "training molecules" in result.stderr
 
 
 def test_cli_csv_end_to_end(tmp_path):
