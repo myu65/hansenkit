@@ -45,6 +45,8 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
 - Periodic topology aliases are grouping-only; preserve original chemistry and existing
   reservation links. Source-consistent MD property heads need a separate exact-plan fitting
   review and remain computed-reference artifacts, never independent HSP measurements.
+- Charge classification recognizes only explicit neutral covalent nitro/nitrate motifs.
+  It never neutralizes a graph, qualifies a zwitterion by net zero, or expands HSP scope.
 
 ## Development
 

@@ -20,6 +20,10 @@
 - [Opt-in six-group source-reference calculation](reference-gc.md) reproduces a new primary article's
   examples and covers 112/1,030 reference structures; it is not independent measured validation.
   Current Excel reservation leaves 11 structure candidates in 10 families, still awaiting measurement qualification.
+- [Current-policy few-shot HSP reference fit](current-hsp-fewshot.md) learns those 11 records
+  locally and compares 1,013 other structures. C and QM9 augmentation pass the numerical
+  polar criterion only; all methods fail the dispersion/H-bond criteria. Independent measured
+  noninferiority remains unproven; no calibrated interval or qualified material backend follows.
 
 ## M2 — Polymers and long-chain surfactants
 
