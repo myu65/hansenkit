@@ -288,6 +288,12 @@ def main(argv=None):
     reference.add_argument("--repeat-count", type=int)
     reference.add_argument("--left-cap", help="Port SMILES or explicit 'hydrogen'")
     reference.add_argument("--right-cap", help="Port SMILES or explicit 'hydrogen'")
+    cohesion = commands.add_parser(
+        "md-cohesion-prepare", help="Prepare local MD observables; not three-component HSP labels"
+    )
+    cohesion.add_argument("--data", required=True)
+    cohesion.add_argument("--review", required=True)
+    cohesion.add_argument("--out", required=True)
     train = commands.add_parser("train")
     add_training(train)
     train.add_argument("--mode", choices=("A", "B", "C"), default="A")
@@ -392,6 +398,20 @@ def main(argv=None):
                     right_cap=None if args.right_cap == "hydrogen" else args.right_cap,
                 )
             print(json.dumps(report))
+        elif args.command == "md-cohesion-prepare":
+            from .cohesion import prepare_md_cohesion
+
+            report = prepare_md_cohesion(args.data, args.review, args.out)
+            print(
+                json.dumps(
+                    {
+                        "out": args.out,
+                        "counts": report["counts"],
+                        "hsp_three_component_targets": 0,
+                        "training_allowed": False,
+                    }
+                )
+            )
         elif args.command in {"train", "compare"}:
             dataset = load_dataset(args.data, args.manifest)
             dataset.manifest.authorize("evaluate")
