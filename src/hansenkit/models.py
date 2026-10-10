@@ -228,6 +228,7 @@ def train_model(
         "real_accuracy_validated": False,
         "residual_cross_fitted": mode == "C",
         "runtime_versions": {pkg: version(pkg) for pkg in packages},
+        "training_series": sorted({dataset.series[i] for i in indices if dataset.series[i]}),
     }
     return HSPModel(
         mode, fitted, residual, encoder.metadata(), provenance, smiles, x.min(0), x.max(0)
