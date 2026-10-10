@@ -31,6 +31,10 @@
 - Two public experimental studies are inventoried as [28 material/API candidates](public-measurement-candidates.md);
   grades, methods and conditions remain to qualify before a material benchmark.
 - Polymer-series and surfactant-family held-out evaluation, then an evidence-based scope expansion.
+- A [21-material experimental-sphere recipe exploration](polyester-recipe-exploration.md)
+  compares feed composition with Mn metadata in 11-family and stronger three-family holdouts.
+  Metadata lowers MAE, but the stronger split has negative R² for all components;
+  unknown product graphs/temperature/ends prevent qualified material inference.
 - Ionic surfactants and mixtures need separate physical definitions and validation before numerical output.
 
 ## M3 — Optional physics and active learning
