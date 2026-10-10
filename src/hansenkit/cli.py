@@ -277,6 +277,17 @@ def main(argv=None):
     )
     chain.add_argument("--input", required=True)
     chain.add_argument("--output", required=True)
+    reference = commands.add_parser(
+        "reference-gc", help="Opt-in local coefficient reference; not validated HSP inference"
+    )
+    reference.add_argument("--parameters", required=True)
+    reference.add_argument("--review", required=True)
+    structure = reference.add_mutually_exclusive_group(required=True)
+    structure.add_argument("--smiles")
+    structure.add_argument("--repeat-unit")
+    reference.add_argument("--repeat-count", type=int)
+    reference.add_argument("--left-cap", help="Port SMILES or explicit 'hydrogen'")
+    reference.add_argument("--right-cap", help="Port SMILES or explicit 'hydrogen'")
     train = commands.add_parser("train")
     add_training(train)
     train.add_argument("--mode", choices=("A", "B", "C"), default="A")
@@ -363,6 +374,24 @@ def main(argv=None):
                     }
                 )
             )
+        elif args.command == "reference-gc":
+            from .reference_gc import ReferenceGC
+
+            calculator = ReferenceGC(args.parameters, args.review)
+            if args.smiles is not None:
+                if any(x is not None for x in (args.repeat_count, args.left_cap, args.right_cap)):
+                    raise ValueError("Molecule calculation cannot include repeat/cap options")
+                report = calculator.molecule(args.smiles)
+            else:
+                if any(x is None for x in (args.repeat_count, args.left_cap, args.right_cap)):
+                    raise ValueError("Repeat calculation requires count and both explicit caps")
+                report = calculator.homopolymer(
+                    args.repeat_unit,
+                    args.repeat_count,
+                    left_cap=None if args.left_cap == "hydrogen" else args.left_cap,
+                    right_cap=None if args.right_cap == "hydrogen" else args.right_cap,
+                )
+            print(json.dumps(report))
         elif args.command in {"train", "compare"}:
             dataset = load_dataset(args.data, args.manifest)
             dataset.manifest.authorize("evaluate")

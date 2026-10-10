@@ -34,6 +34,10 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   surfactants through explicitly qualified backends. Preserve default PoC refusals until a
   backend's own applicable scope and validation evidence are implemented. Never invent a
   physical accuracy claim from stable finite arithmetic or auxiliary/teacher training counts.
+- `reference-gc` is a separately labeled local coefficient-reference calculation, not a qualified
+  physical backend. Read docs/reference-gc.md; keep coefficient files out of Git and preserve
+  hash-bound local-use reviews, complete atom coverage, bounded size and explicit caps.
+  Never pass its outputs into training, pseudo-label datasets or the default HSP predictor.
 
 ## Development
 

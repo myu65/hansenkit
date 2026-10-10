@@ -17,6 +17,9 @@
 - Pre-register scaffold holdouts, units, temperature handling and calibration; compare A/B/C over seeds.
 - Exact MoLFormer release review and frozen adapter are implemented; evaluate B/C on cleared measurements.
 - Report teacher reproduction separately if an authorized teacher is used. Never replace real accuracy with it.
+- [Opt-in six-group source-reference calculation](reference-gc.md) reproduces a new primary article's
+  examples and covers 112/1,030 reference structures; it is not independent measured validation.
+  Current Excel reservation leaves 11 structure candidates in 10 families, still awaiting measurement qualification.
 
 ## M2 — Polymers and long-chain surfactants
 

@@ -127,6 +127,10 @@ as independently verified experimental accuracy or as fulfillment of the complet
 
 ## Remaining work
 
+The [new source-coefficient reference experiment](reference-gc.md) fixes the source convention and
+complete six-group scope before reading evaluation values. Its 112 supported rows and bounded-chain
+arithmetic checks do not establish independent measured accuracy or the 1,000-compound goal.
+
 Complete identity/reference-lineage reconciliation and expand measured training data outside
 the reserved families; establish the 1,000-compound HSP comparison; compare A/B/C with
 train-only selection and independent Excel evaluation; test auxiliary transfer against a
