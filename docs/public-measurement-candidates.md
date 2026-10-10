@@ -119,8 +119,12 @@ incomplete. Every complete pair includes a reserved or unsupported solvent;
 zero pairs pass qualification for a **trainable molecular pair model**. A future
 fixed-solvent-coordinate task needs its own reviewed contract and prospective
 solute-family partitions; the solute-only count cannot silently authorize solvent
-feature fitting. No new HSP triples, auxiliary fit or public model follows from
-this inventory. Repeated temperature/solvent observations are not distinct compounds.
+feature fitting. No new HSP triples or public model follow from this inventory.
+Repeated temperature/solvent observations are not distinct compounds. A subsequently
+qualified, separately reviewed [fixed-coordinate reference logS experiment](fixed-coordinate-solubility.md)
+uses independently corroborated solute graphs and performs no solvent-graph fitting.
+Its preparation, support rules and results are separate from the original
+permission-off inventory and make no HSP accuracy claim.
 
 ## Next experiment
 
