@@ -13,7 +13,7 @@ from .embargo import HoldoutEmbargo
 from .models import LinearHead
 from .provenance import file_hash
 from .schema import StrictModel
-from .splitting import grouping_keys
+from .splitting import GROUPING_POLICY, grouping_keys
 
 
 class AuxiliaryManifest(StrictModel):
@@ -79,6 +79,7 @@ def fit_auxiliary(path, manifest: AuxiliaryManifest, encoder, embargo: HoldoutEm
     error = prediction - y[test]
     report = {
         "task": "quantum_property_auxiliary",
+        "grouping_policy": GROUPING_POLICY,
         "hsp_training_rows": 0,
         "quantum_training_rows": len(train),
         "quantum_test_rows": len(test),
@@ -100,6 +101,7 @@ def fit_auxiliary(path, manifest: AuxiliaryManifest, encoder, embargo: HoldoutEm
     state = {
         "schema_version": 1,
         "task": "quantum_property_auxiliary",
+        "grouping_policy": GROUPING_POLICY,
         "head": head.state(),
         "encoder": encoder.metadata(),
         "manifest": manifest.model_dump(),

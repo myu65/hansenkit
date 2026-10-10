@@ -138,10 +138,8 @@ source. These are diagnostics, without a physical or exchangeability guarantee.
 Feature-box OOD identifies 56 EGP test rows and three GDB17 test rows; all test
 families are unseen even if their feature coordinates lie inside that box.
 
-No new current-policy cross-source transfer result is claimed here. The historical
-negative-R2 transfer results below remain a warning requiring a fresh fixed-head
-diagnostic. No HSP targets, Excel coefficients or public trained weights result
-from these fits, and no polymer/surfactant numerical backend is qualified.
+No HSP targets, Excel coefficients or public trained weights result from these
+fits, and no polymer/surfactant numerical backend is qualified.
 
 Immutable EGP/GDB17 plan SHA-256 values:
 `2a6bf9682b29410e131f684f982a8284a3040ddeb9ee69ed637eb58846eceb27` /
@@ -149,6 +147,35 @@ Immutable EGP/GDB17 plan SHA-256 values:
 Selection SHA-256 values:
 `e24b07c0e0db1c92d11f4c20e343d8d07a913e130784db652e2ffe6776688c77` /
 `eb31710bfd7b4dacd51fa461f0ebad873bd5c9d278303d334800e2ae3fb8398f`.
+
+### Current-policy GDB17-to-EGP transfer
+
+The three newly fitted GDB17 heads were frozen and applied to all 5,544 retained
+EGP molecules in 682 groups. The complete selected populations have zero alias
+overlap. Every EGP core had been reserved before GDB17 fitting. The new diagnostic
+plan reuses GDB17-only calibration radii and performs no refitting, threshold choice
+or interval calibration on EGP. Both sources remain 300 K computed solvation.
+
+| Fixed head | Mean MAE | Mean RMSE | Mean R2 | Mean complete-family interval coverage |
+| --- | ---: | ---: | ---: | ---: |
+| A | 3.294 | 4.518 | -0.418 | 0.455 |
+| B | 3.243 | 4.220 | -0.237 | 0.316 |
+| C | 3.213 | 4.462 | -0.384 | 0.424 |
+
+MAE/RMSE units are kcal/mol, averaged as above. **All 39 R2 values are negative
+for every model.** The nominal 90% intervals have poor source-transfer coverage:
+minimum per-solvent complete-family coverage is 0.298/0.122/0.246 for A/B/C.
+1,932 rows lie outside the GDB17 training feature box. Even its in-box population
+has mean MAE 3.060/3.179/2.996; a scalar feature box does not establish applicability.
+The small C-versus-A mean-MAE reduction does not establish successful transfer.
+Prior EGP source labels/results were explored, so this is not a new blind benchmark.
+
+An independent process restores each fixed head and reproduces every saved
+prediction, all 39 metrics and saved-interval coverage within 1e-9. Preserve these
+failures when considering broader source training or new molecular representations;
+do not promote the GDB17 model as a large-molecule or HSP backend.
+Transfer plan SHA-256:
+`8d6f13f41fbd6efa080005fd0535d1ffc926b251a3a278e58347dec3d40267e1`.
 
 ## Historical local A/B/C comparisons
 

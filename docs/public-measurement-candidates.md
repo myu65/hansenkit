@@ -89,6 +89,39 @@ tautomer, and the source's nicotine graph needs independent positional-identity
 review. No coefficients, predictions, feature-count table or HSP labels supply
 training. This source has not yet yielded a qualified calibration population.
 
+## Measured solubility sources, separate from HSP labels
+
+The [EnSol primary paper](https://arxiv.org/abs/2609.21151) links the
+[authors' repository](https://github.com/thaonguyen217/EnSol). At
+`946a2addbd98b9f30f02bf494a0059c2e5c284e5`, static CSV downloads pass their Git
+blob hashes: BigSol has 100,570 records for 1,375 raw solute strings, SolProp has
+6,236 records, Leeds has 1,469, and the lab assay has 100 pairs for ten solutes.
+No upstream code, pickle or weight is executed/downloaded. No repository license
+is detected; code/weights remain disabled and dataset/source rights are separate.
+The lab CSV retains 22 explicitly censored concentrations with nonfinite logS;
+its temperature field is 273.15 without declared units. Keep that source field
+and unresolved method conditions; do not infer or replace a temperature.
+
+The [author-hosted BigSolDB v2.1](https://huggingface.co/datasets/levakrasnov/BigSolDBv2.1)
+declares CC BY 4.0. At `8d7442c123d417fe4c18fd91524c176ede359f27`, the CSV passes
+publisher LFS SHA-256 `212cb511e05051917f7ab8811282c06c99512e4f720cf270be555fdf07b4a854`.
+It contains 112,465 solubility rows, 1,525 raw solute structures and 214 raw solvent
+structures (218 solvent names in the card). Its `Source` column supplies literature
+DOIs, and temperature is explicitly in K. There are 3,187 nonfinite logS cells and
+3,925 repeated canonical solute/solvent/temperature rows. Preserve missingness,
+source conflicts and original density-based concentration conversions; no clipping
+or automatically averaged duplicate measurements have been adopted.
+
+Current HSP reservation and conservative neutral-organic qualification leave 563
+candidate canonical solutes and 38,294 associated rows in v2.1. They are not a
+cleared fitting population: name/CAS/stereo/phase/method reconciliation remains
+incomplete. Every complete pair includes a reserved or unsupported solvent;
+zero pairs pass qualification for a **trainable molecular pair model**. A future
+fixed-solvent-coordinate task needs its own reviewed contract and prospective
+solute-family partitions; the solute-only count cannot silently authorize solvent
+feature fitting. No new HSP triples, auxiliary fit or public model follows from
+this inventory. Repeated temperature/solvent observations are not distinct compounds.
+
 ## Next experiment
 
 For [polymer validation #5](https://github.com/myu65/hansenkit/issues/5), first review
