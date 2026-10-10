@@ -8,6 +8,10 @@ from rdkit import Chem
 from rdkit.Chem import Descriptors, rdMolDescriptors
 
 
+class UnstableSmilesError(ValueError):
+    """Canonical identity cannot survive an unchanged parse/serialize round trip."""
+
+
 def normalize_smiles(smiles: str) -> str:
     if not isinstance(smiles, str) or not smiles.strip():
         raise ValueError("SMILES must be a nonempty string")
@@ -19,7 +23,17 @@ def normalize_smiles(smiles: str) -> str:
     for atom in mol.GetAtoms():
         atom.SetAtomMapNum(0)
     # Preserve stereo, charge, isotopes and every fragment; do not silently desalt/neutralize.
-    return Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True)
+    canonical = Chem.MolToSmiles(mol, canonical=True, isomericSmiles=True)
+    with Chem.rdBase.BlockLogs():
+        roundtrip = Chem.MolFromSmiles(canonical)
+    if (
+        roundtrip is None
+        or Chem.MolToSmiles(Chem.RemoveHs(roundtrip), canonical=True, isomericSmiles=True)
+        != canonical
+    ):
+        # Never choose a configuration by repeated serialization or lexical order.
+        raise UnstableSmilesError("Unstable canonical SMILES identity")
+    return canonical
 
 
 def molecule(smiles: str) -> Chem.Mol:

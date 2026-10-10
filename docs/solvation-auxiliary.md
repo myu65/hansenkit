@@ -36,6 +36,9 @@ This auxiliary profile then excludes charged atoms, disconnected
 graphs, radicals, dummy ports and nonorganic graphs. It reserves canonical identities
 and the existing strict Murcko families, including the common acyclic family.
 The profile does not broaden the default HSP inference scope.
+Normalization must survive an unchanged RDKit parse/serialize round trip. An unstable
+canonical identity is refused and tracked as `unstable_canonical_identity`; never
+choose a stereochemical configuration by iterative serialization or lexical order.
 
 Canonical duplicate vectors equal within 1e-8 kcal/mol collapse; all conflicting
 duplicate identities are excluded. The report preserves original indices and reasons.
@@ -70,16 +73,31 @@ remain outside that candidate set. Name/structure and measurement-lineage review
 ## Experiment status
 
 The preparation contract is tested on original synthetic interaction arrays in CI.
-The real EGP source passed its publisher MD5 and full-file preparation. Of 18,362 rows,
-8,269 unique molecules and 322,491 computed target values remain: 6,943 rows are reserved,
-1,995 charged/disconnected/radical/dummy, 1,140 missing/nonfinite and 15 nonorganic.
+The real EGP source passed its publisher MD5 and full-file preparation. After the
+stable-identity guard, 8,268 unique molecules and 322,452 computed target values remain
+from 18,362 rows: 6,943 reserved, 1,995 charged/disconnected/radical/dummy, 1,140
+missing/nonfinite, 15 nonorganic and one unstable canonical identity.
 Per-row rejection reasons and original source indices reconcile the entire population.
-The exported fitting permissions remain off because complete holdout reconciliation,
-source method/outlier review and a prospective transfer experiment are still required.
-No new SolQuest head or HSP head has been fitted. The larger GDB17 archive is downloading;
-its data and preparation remain unverified. Track the ingestion/transfer in
+The prospective molecular inventory classifies all 970 HSPiT/Mathieu source rows:
+958 have all available candidates reserved, and 12 are excluded from single-molecule
+numeric evaluation because of undefined material specifications (10), an invalid
+identifier (one), or an isomeric mixture (one). Exclusions use identifiers/specifications,
+never HSP values or prediction errors. All identified components remain reserved.
+This adjudication does not certify unique structures, measurement lineage or a complete
+material benchmark; those sources remain evaluation-only. The enlarged known reservation
+contains 1,266 identities and 132 strict Murcko families.
+
+Exported fitting permissions remain off. A separate fitting review must bind the
+qualified molecular evaluation inventory, source method/outlier decisions and a
+prospective split/experiment; never simply flip the exported manifest flags.
+No new SolQuest head or HSP head has been fitted at this snapshot. The complete GDB17
+archive passed publisher MD5; its preparation and any fitted-model results remain
+unverified. Track the ingestion/transfer in
 [#20](https://github.com/myu65/hansenkit/issues/20). The complete 1,000-compound HSP
 accuracy and polymer/surfactant property-validation objective remains open.
 
 Local EGP SHA-256: `4d5f1de3fb7929ce9a7646be5d78faf683c61555d6ca615caca813a22fc7b701`;
 prepared NPZ SHA-256: `7acf1678ea35581554c4768ad92f0868f31ed988c6f30c0dfde4c3a5cf16e687`.
+That NPZ is the historical pre-guard preparation. The stable-identity preparation is
+`d3a6474feff61fda9c239a0139bb8361e885316b54da1a3e8a6d97c794ac1b5f`.
+GDB17 ZIP SHA-256: `79185e43c28dd01893ea646c380e3024f09633abd59d30d4c6f3a6f4cac51518`.

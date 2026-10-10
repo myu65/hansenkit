@@ -1,6 +1,11 @@
 import pytest
 
-from hansenkit.chemistry import atom_coverage, chemical_features, normalize_smiles
+from hansenkit.chemistry import (
+    UnstableSmilesError,
+    atom_coverage,
+    chemical_features,
+    normalize_smiles,
+)
 from hansenkit.schema import MoleculeInput
 from hansenkit.scope import assess_scope
 
@@ -12,6 +17,33 @@ def test_normalization_preserves_chemical_identity():
     assert "." in normalize_smiles("CCO.[Na+]")
     assert "+" in normalize_smiles("C[N+](C)(C)C")
     assert "13" in normalize_smiles("[13CH3]CO")
+
+
+@pytest.mark.parametrize(
+    "smiles",
+    ["C[C@H](O)F", "[2H]OC", "[13CH3:7][CH2:2][OH:9]", "CCO.[Na+]", "[CH3]"],
+)
+def test_normalized_identity_survives_repeated_round_trips(smiles):
+    canonical = normalize_smiles(smiles)
+    for _ in range(3):
+        assert normalize_smiles(canonical) == canonical
+
+
+def test_unstable_serializer_is_rejected_without_iterative_rewriting(monkeypatch):
+    from hansenkit import chemistry
+
+    outputs = iter(["CCO", "OCC"])
+    monkeypatch.setattr(chemistry.Chem, "MolToSmiles", lambda *args, **kwargs: next(outputs))
+    with pytest.raises(UnstableSmilesError, match="Unstable canonical SMILES"):
+        normalize_smiles("CCO")
+
+
+def test_unparseable_serialized_identity_is_rejected(monkeypatch):
+    from hansenkit import chemistry
+
+    monkeypatch.setattr(chemistry.Chem, "MolToSmiles", lambda *args, **kwargs: "invalid")
+    with pytest.raises(UnstableSmilesError, match="Unstable canonical SMILES"):
+        normalize_smiles("CCO")
 
 
 @pytest.mark.parametrize("smiles", ["", "  ", "not_smiles", "C1CCC", "C(C)(C)(C)(C)C"])
