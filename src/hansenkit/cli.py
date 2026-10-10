@@ -48,7 +48,16 @@ def configured_encoder(args):
 
 def fit_and_report(dataset, split, args, mode, head="ridge", encoder=None):
     encoder = encoder or configured_encoder(args)
-    model = train_model(dataset, split.train, split.groups, mode, encoder, head, args.seed)
+    model = train_model(
+        dataset,
+        split.train,
+        split.groups,
+        mode,
+        encoder,
+        head,
+        args.seed,
+        split_strategy=args.split,
+    )
     model.provenance.update(
         {
             "split_strategy": args.split,

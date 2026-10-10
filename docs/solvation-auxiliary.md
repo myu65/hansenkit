@@ -103,6 +103,12 @@ There is no source-target clipping, zero filling or HSP-error-based selection.
 
 ## Completed local A/B/C comparisons
 
+These are historical results under their original strict-Murcko policy.
+The [stronger tautomer/core audit](tautomer-isolation.md) finds EGP training and
+partition conflicts and requires a new plan/refit. The GDB17 stronger-policy audit
+is pending. The metrics below remain unchanged; they do not certify isolation
+under the current grouping policy or qualify an HSP transfer backend.
+
 All models use Ridge alpha 100; A has 105 original chemical features, B has the
 reviewed frozen 768-dimensional MoLFormer representation, and C adds an embedding
 residual head trained on four inner folds with whole training families separated.

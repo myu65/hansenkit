@@ -35,6 +35,23 @@ checksummed XML and transcriptions remain outside Git. A polymer with unknown
 composition, end groups or molecular weight must not become one guessed SMILES.
 Existing default polymer/ionic/mixture refusals still apply.
 
+The official PMC S3 release supplied both article and supporting PDFs, checked
+against the per-object publisher MD5. Read-only transcription retains 381 numeric
+polyester/solvent scores and 273 ASD/API/solvent scores, with 249 and 195 missing
+cells respectively. The 2026 per-column totals reconcile exactly. These 654 pairs
+are empirical compatibility scores, not 654 independent HSP compounds. Keep
+source header/caption inconsistencies and unspecified solvent isomers unresolved.
+
+A fixed-head diagnostic compares 15 unambiguous common solvents for each of the
+three APIs, using no fitted threshold or additional training. A/B/C Spearman rho
+is 0.660/0.757/0.725 for carbamazepine, 0.803/0.607/0.700 for griseofulvin, and
+0.775/0.775/0.760 for resveratrol. These are explored one-minute, room-temperature
+dissolution scores, with solid-form and numerical temperature uncertainty; calculated
+solvation targets are at 300 K. Griseofulvin is outside the chemical training feature
+box. No HSP predictions or equilibrium-solubility accuracy claims follow. The
+diagnostic uses historical auxiliary heads; the current [stronger isolation audit](tautomer-isolation.md)
+requires their refit before any qualified transfer claim.
+
 ## Compilations and solvent-design tools
 
 The [Wolfram 211-solvent resource](https://datarepository.wolframcloud.com/resources/JoshuaSchrier_Hansen-Solubility-Parameters)
@@ -61,6 +78,16 @@ An identifier-only local inventory of the HSPiPy example's 1,206 rows leaves one
 potential neutral organic structure outside the current reservations and identity
 qualification exclusions. This does not clear its measurement lineage or permit
 fitting. Recompiling overlapping tables cannot supply a new 1,000-compound benchmark.
+
+The [primary PEESE property repository](https://github.com/PEESEgroup/Pure-Component-Property-Estimation)
+at `9b386f845071596e926e375d95666f7a8b1e0ec6` explicitly names software and data
+under MIT. Local checksummed identity-column reads find 1,037/1,017/1,016 D/P/H
+component rows. The numerical `Experimental` header does not certify measured
+lineage. Against the prior strict reservations, only three potential identities
+have all components outside the known families; one is a reserved compound's
+tautomer, and the source's nicotine graph needs independent positional-identity
+review. No coefficients, predictions, feature-count table or HSP labels supply
+training. This source has not yet yielded a qualified calibration population.
 
 ## Next experiment
 

@@ -14,6 +14,9 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   recording both label kinds. Never describe synthetic/teacher agreement as real accuracy.
 - Keep local data/models in ignored directories. Do not upload them or log raw private records.
 - Normalize before grouping. Keep canonical duplicates and scaffold/polymer families within one split.
+  Preserve legacy Murcko links and the current conservative core/complete bounded tautomer aliases.
+  Grouping keys never replace encoder inputs; partial enumeration cannot certify isolation.
+  Reaudit historical fits and refit conflicts; never repair contaminated training by filtering test only.
   Fit preprocessing, residual models, OOD references, and uncertainty using training/calibration only.
 - Reject unsupported polymers, mixtures, ionic molecules and EO/PO surfactants during inference.
   Schema support is not a scientific applicability claim. No guessed HSP fallback.

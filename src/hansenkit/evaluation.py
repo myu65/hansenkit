@@ -7,7 +7,7 @@ from .chemistry import chemical_features, normalize_smiles
 from .data import TARGETS, Dataset
 from .encoders import MorganEncoder
 from .models import HSPModel
-from .splitting import scaffold_key
+from .splitting import GROUPING_POLICY, scaffold_key, structure_group_aliases
 
 
 def _checked_partition(model, dataset, indices, groups, role):
@@ -40,20 +40,44 @@ def _checked_partition(model, dataset, indices, groups, role):
         raise ValueError("Unknown artifact split strategy")
     if set(families) & train_families:
         raise ValueError(f"{role.capitalize()} overlaps training families")
+    aliases = [structure_group_aliases(s, strategy == "scaffold") for s in smiles]
+    train_aliases = set().union(
+        *(structure_group_aliases(s, strategy == "scaffold") for s in train_smiles)
+    )
+    if any(not train_aliases.isdisjoint(keys) for keys in aliases):
+        raise ValueError(f"{role.capitalize()} overlaps training families or tautomer identities")
     for keys in (smiles, families):
         assignments = {}
         for key, group in zip(keys, groups[indices], strict=True):
             if key in assignments and assignments[key] != group:
                 raise ValueError("Partition groups split a canonical identity or declared family")
             assignments[key] = group
+    assignments = {}
+    for keys, group in zip(aliases, groups[indices], strict=True):
+        for key in keys:
+            if key in assignments and assignments[key] != group:
+                raise ValueError("Partition groups split a tautomer identity or family")
+            assignments[key] = group
     if role == "evaluation" and model.calibration_info is not None:
         info = model.calibration_info
-        if info.get("split_strategy") != strategy or "calibration_families" not in info:
+        if (
+            info.get("split_strategy") != strategy
+            or "calibration_families" not in info
+            or info.get("grouping_policy") != GROUPING_POLICY
+        ):
             raise ValueError("Calibration family provenance missing; recalibrate before evaluation")
         if set(smiles) & set(info["calibration_smiles"]):
             raise ValueError("Evaluation contains calibration molecules")
         if set(families) & set(info["calibration_families"]):
             raise ValueError("Evaluation overlaps calibration families")
+        calibration_aliases = set().union(
+            *(
+                structure_group_aliases(normalize_smiles(s), strategy == "scaffold")
+                for s in info["calibration_smiles"]
+            )
+        )
+        if any(not calibration_aliases.isdisjoint(keys) for keys in aliases):
+            raise ValueError("Evaluation overlaps calibration families or tautomer identities")
     return indices, smiles, families, strategy
 
 
@@ -121,6 +145,7 @@ def calibrate(model: HSPModel, dataset: Dataset, indices, groups, encoder=None, 
         "calibration_label_kind": dataset.manifest.label_kind,
         "calibration_dataset_sha256": dataset.manifest.sha256,
         "split_strategy": strategy,
+        "grouping_policy": GROUPING_POLICY,
         "calibration_smiles": list(smiles),
         "calibration_families": sorted(set(families)),
         "finite_interval_available": model.conformal_radius is not None,
