@@ -73,6 +73,10 @@ review. Do not infer that only these records are wrong: the full CAS/structure a
 tracked in [#15](https://github.com/myu65/hansenkit/issues/15). Raw data and previous results
 are preserved. Corrections must follow source identity evidence, not prediction error.
 
+The [expanded identity audit](identity-audit.md) now includes complete batch correspondence,
+aggregate discrepancy classifications and the larger Excel reservation. The historical
+comparison above is retained with its original inputs; no independent accuracy claim is added.
+
 [PubChem PUG REST](https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest) supports the local identity
 audit. Its request plan contains identifiers only, retains all returned CID candidates,
 uses at most two concurrent requests, and does not silently select the first hit or
