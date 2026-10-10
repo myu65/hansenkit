@@ -23,6 +23,11 @@ atom-coverage behavior has been checked against the original method.
 
 ## Isolation
 
+The current [tautomer/core grouping policy](tautomer-isolation.md) coarsens the
+original canonical/Murcko links without replacing them. Historical counts/metrics
+below describe their original plans. Reaudit old fitted populations and refit any
+conflicting model before claiming stronger-policy isolation.
+
 1. HSPiT workbook numbers, including coefficient tables, are evaluation-only. They cannot
    supply training labels, residual targets, fitted features, tuning or calibration.
 2. Reserve workbook canonical identities and Murcko families before any fitting. The strict

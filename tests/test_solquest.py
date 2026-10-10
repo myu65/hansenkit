@@ -36,6 +36,39 @@ def source(tmp_path, structures, targets, zipped=False):
     return path, review
 
 
+def test_prepare_excludes_reserved_tautomer_with_original_row_trace(tmp_path):
+    path, review = source(tmp_path, ["OC1=CCCCC1", "C1CC1"], {"h2o": [-1, -2]})
+    out = tmp_path / "prepared"
+    report = prepare_solquest(path, out, review, HoldoutEmbargo.from_smiles(["O=C1CCCCC1"]))
+    assert report["prepared_unique_molecules"] == 1
+    assert report["rejected_source_rows"] == [
+        {"source_row": 0, "reason": "reserved_identity_or_scaffold"}
+    ]
+    with np.load(out / "computed-solvation.npz", allow_pickle=False) as arrays:
+        assert arrays["smiles"].tolist() == ["C1CC1"]
+    assert report["holdout_embargo"]["grouping_policy"].endswith("bounded-tautomer-v1")
+
+
+def test_prepare_records_incomplete_tautomer_grouping_as_a_refusal(tmp_path, monkeypatch):
+    from hansenkit import solquest
+    from hansenkit.splitting import TautomerGroupingError
+
+    embargo = HoldoutEmbargo.from_smiles([])
+    original = embargo.allows_canonical
+
+    def incomplete(self, canonical):
+        if canonical == "C1CCC1":
+            raise TautomerGroupingError("Incomplete test enumeration")
+        return original(canonical)
+
+    monkeypatch.setattr(solquest.HoldoutEmbargo, "allows_canonical", incomplete)
+    path, review = source(tmp_path, ["C1CCC1", "C1CC1"], {"h2o": [-1, -2]})
+    report = prepare_solquest(path, tmp_path / "prepared", review, embargo)
+    assert report["rejected_source_rows"] == [
+        {"source_row": 0, "reason": "incomplete_tautomer_grouping"}
+    ]
+
+
 @pytest.mark.parametrize("zipped", [False, True])
 def test_prepare_preserves_alignment_negative_values_and_pending_fit(tmp_path, zipped):
     path, review = source(

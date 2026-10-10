@@ -15,6 +15,7 @@ from .encoders import Encoder, MorganEncoder
 from .provenance import UNITS, DatasetManifest
 from .schema import MoleculeInput
 from .scope import assess_scope
+from .splitting import GROUPING_POLICY, assert_group_isolation
 
 
 @dataclass
@@ -184,13 +185,21 @@ class HSPModel:
 
 
 def train_model(
-    dataset: Dataset, indices, groups, mode="A", encoder=None, head="ridge", seed=42
+    dataset: Dataset,
+    indices,
+    groups,
+    mode="A",
+    encoder=None,
+    head="ridge",
+    seed=42,
+    split_strategy="scaffold",
 ) -> HSPModel:
     dataset.manifest.authorize("train")
     if mode not in {"A", "B", "C"}:
         raise ValueError("Mode must be A, B or C")
     if head not in {"ridge", "lightgbm"} or (head == "lightgbm" and mode != "A"):
         raise ValueError("LightGBM is optional for A; B/C use ridge")
+    assert_group_isolation(dataset.smiles, groups, dataset.series, split_strategy)
     encoder = encoder or MorganEncoder()
     smiles = tuple(dataset.smiles[i] for i in indices)
     x, y = feature_matrix(smiles), dataset.targets[indices]
@@ -224,6 +233,8 @@ def train_model(
         "units": UNITS,
         "dataset_manifest": dataset.manifest.model_dump(),
         "seed": seed,
+        "grouping_policy": GROUPING_POLICY,
+        "split_strategy": split_strategy,
         "scope": "neutral-small-molecule-298.15K-poc",
         "real_accuracy_validated": False,
         "residual_cross_fitted": mode == "C",

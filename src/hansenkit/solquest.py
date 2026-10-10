@@ -14,7 +14,7 @@ from .chemistry import UnstableSmilesError, normalize_smiles
 from .data import write_json
 from .embargo import HoldoutEmbargo
 from .provenance import file_hash
-from .splitting import scaffold_from_canonical
+from .splitting import TautomerGroupingError
 
 
 class _NonfiniteJSONReader:
@@ -165,10 +165,12 @@ def prepare_solquest(path, output, review: AuxiliaryManifest, embargo: HoldoutEm
         if not any(a.GetAtomicNum() == 6 for a in mol.GetAtoms()):
             rejected[index] = "nonorganic_structure"
             continue
-        if (
-            canonical in embargo.identities
-            or scaffold_from_canonical(canonical) in embargo.scaffolds
-        ):
+        try:
+            allowed = embargo.allows_canonical(canonical)
+        except TautomerGroupingError:
+            rejected[index] = "incomplete_tautomer_grouping"
+            continue
+        if not allowed:
             rejected[index] = "reserved_identity_or_scaffold"
             continue
         if not np.isfinite(targets[index]).all():

@@ -7,6 +7,7 @@ from .evaluation import domain_diagnostics
 from .models import HSPModel
 from .schema import INPUT_ADAPTER
 from .scope import assess_scope
+from .splitting import GROUPING_POLICY
 
 
 def predict_record(model: HSPModel, record: dict, encoder=None) -> dict:
@@ -58,7 +59,10 @@ def predict_record(model: HSPModel, record: dict, encoder=None) -> dict:
         "reasons": [],
         "intervals": None,
     }
-    if model.conformal_radius is not None:
+    if (
+        model.conformal_radius is not None
+        and (model.calibration_info or {}).get("grouping_policy") == GROUPING_POLICY
+    ):
         output["intervals"] = {
             target: [
                 float(prediction[i] - model.conformal_radius[i]),
@@ -66,4 +70,6 @@ def predict_record(model: HSPModel, record: dict, encoder=None) -> dict:
             ]
             for i, target in enumerate(TARGETS)
         }
+    elif model.conformal_radius is not None:
+        output["reasons"].append("calibration_grouping_policy_obsolete")
     return output

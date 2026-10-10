@@ -82,11 +82,15 @@ def test_series_policy_and_missing_series_do_not_fall_back_to_scaffolds(syntheti
 
 
 def test_noncanonical_training_alias_is_still_rejected(synthetic):
+    from rdkit import Chem
+
     _, data, split = synthetic
     model = train_model(data, split.train, split.groups)
-    assert "C" in model.train_smiles
+    training_smiles = model.train_smiles[0]
+    alias = Chem.MolToSmiles(Chem.MolFromSmiles(training_smiles), allHsExplicit=True)
+    assert alias != training_smiles
     with pytest.raises(ValueError, match="training molecules"):
-        evaluate(model, one_row(data, "[CH4]"), [0], [0])
+        evaluate(model, one_row(data, alias), [0], [0])
 
 
 def test_callers_cannot_split_one_calibration_family_into_independent_scores(synthetic):
