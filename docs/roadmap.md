@@ -21,6 +21,8 @@
 ## M2 — Polymers and long-chain surfactants
 
 - Cleared polymer measurements; repeat units, Mn, dispersity, end groups and EO/PO distribution.
+- Two public experimental studies are inventoried as [28 material/API candidates](public-measurement-candidates.md);
+  grades, methods and conditions remain to qualify before a material benchmark.
 - Polymer-series and surfactant-family held-out evaluation, then an evidence-based scope expansion.
 - Ionic surfactants and mixtures need separate physical definitions and validation before numerical output.
 

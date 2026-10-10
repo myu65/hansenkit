@@ -87,17 +87,72 @@ This adjudication does not certify unique structures, measurement lineage or a c
 material benchmark; those sources remain evaluation-only. The enlarged known reservation
 contains 1,266 identities and 132 strict Murcko families.
 
-Exported fitting permissions remain off. A separate fitting review must bind the
-qualified molecular evaluation inventory, source method/outlier decisions and a
-prospective split/experiment; never simply flip the exported manifest flags.
-No new SolQuest head or HSP head has been fitted at this snapshot. The complete GDB17
-archive passed publisher MD5; its preparation and any fitted-model results remain
-unverified. Track the ingestion/transfer in
-[#20](https://github.com/myu65/hansenkit/issues/20). The complete 1,000-compound HSP
-accuracy and polymer/surfactant property-validation objective remains open.
+Exported preparation-manifest fitting permissions remain off. The completed local
+experiments use separate checksum-bound fitting reviews with
+`audit_basis="operator_assumption"`, the qualified molecular evaluation inventory,
+source method/outlier decisions and immutable prospective plans. They do not claim
+that every excluded material has a unique resolved structure, or authorize any
+public data/model redistribution. No HSP head has been fitted from these targets.
+
+The complete GDB17 archive passed publisher MD5. Stable-identity preparation retains
+189,764 unique molecules from 309,468 source rows, with 7,400,796 target values.
+Rejections reconcile the full source: 40,055 reserved, 7,777 charged/disconnected/
+radical/dummy, 71,855 missing/nonfinite, five invalid, six unstable and six conflicting
+duplicate rows. The conflicting duplicate rows represent three excluded identities.
+There is no source-target clipping, zero filling or HSP-error-based selection.
+
+## Completed local A/B/C comparisons
+
+All models use Ridge alpha 100; A has 105 original chemical features, B has the
+reviewed frozen 768-dimensional MoLFormer representation, and C adds an embedding
+residual head trained on four inner folds with whole training families separated.
+The chemical features add absolute counts for extensive solvation targets to the
+existing density descriptors. Incomplete group coverage is explicit; no catch-all
+group is invented. Preprocessing, residual training and feature-box OOD bounds use
+training only. Calibration/test populations and identities/families are disjoint.
+Per-target 90% intervals use calibration-family maximum absolute errors. They are
+diagnostics, not guaranteed physical coverage or a simultaneous 39-target interval.
+
+| Experiment | Train / calibration / test molecules | A mean MAE / RMSE | B mean MAE / RMSE | C mean MAE / RMSE |
+| --- | --- | --- | --- | --- |
+| EGP, strict held-out families | 5,034 / 690 / 2,544 | 2.905 / 3.747 | 2.998 / 3.864 | 2.934 / 3.853 |
+| GDB17, strict held-out families; all EGP families additionally reserved | 107,078 / 36,055 / 38,081 | 1.078 / 1.502 | 1.058 / 1.462 | 0.942 / 1.341 |
+
+Units are kcal/mol; each MAE is the average over 39 target columns. RMSE is the mean
+of the 39 separately computed target RMSEs. These are **computed solvation** results,
+not HSP triples, measurements, or evidence of 1,000-compound HSP parity.
+
+The GDB17 experiment excludes a further 8,550 rows to reserve all 8,268 EGP molecules'
+families, leaving 181,214 molecules. Train/calibration/test have 72,048/24,016/24,017
+strict Murcko families. C improves GDB17 test MAE by 12.6% versus A; EGP's own
+held-family experiment demonstrates no improvement from B/C over A. No test-based
+model selection or refitting is performed. All saved model JSONs reproduce predictions
+after reload; every solvent's MAE/RMSE/R2 and interval coverage is retained locally.
+
+Source-transfer diagnostics apply each GDB17 model to all 8,268 EGP molecules with
+zero identity/family overlap. This previously explored EGP population is not a new
+blind benchmark. A/B/C mean MAE is 3.207/3.291/3.137 and mean RMSE is
+4.390/4.243/4.361 kcal/mol. **Every solvent's R2 is negative for all three models**;
+mean R2 is -0.279/-0.195/-0.262. A small relative MAE reduction does not establish
+successful source generalization. 3,831 EGP rows are outside the GDB17 training
+chemical-feature box, compared with 11 within-source test rows. All test families
+are unseen even when their scalar features fall inside that box.
+
+The actual frozen GPU extraction covers 189,764 GDB17 molecules; a fresh reviewed
+encoder instance independently reproduces 32 structure-only probes from each EGP
+and GDB17 cache within 1e-4. This is a sampled cache check, not independent re-embedding
+of the entire population. Source geometry/SMILES correspondence remains unverified,
+and source computed outliers are retained and disclosed. No encoder was fine-tuned.
+
+Track transfer in [#20](https://github.com/myu65/hansenkit/issues/20), and qualification
+of [new public measurement candidates](public-measurement-candidates.md). The complete
+1,000-compound HSP accuracy and polymer/surfactant property-validation objective
+remains open. Computed-solvation training counts cannot satisfy that objective.
 
 Local EGP SHA-256: `4d5f1de3fb7929ce9a7646be5d78faf683c61555d6ca615caca813a22fc7b701`;
 prepared NPZ SHA-256: `7acf1678ea35581554c4768ad92f0868f31ed988c6f30c0dfde4c3a5cf16e687`.
 That NPZ is the historical pre-guard preparation. The stable-identity preparation is
 `d3a6474feff61fda9c239a0139bb8361e885316b54da1a3e8a6d97c794ac1b5f`.
 GDB17 ZIP SHA-256: `79185e43c28dd01893ea646c380e3024f09633abd59d30d4c6f3a6f4cac51518`.
+GDB17 prepared NPZ SHA-256: `341c37e37935db2dd0fd2e8b6534286b930299306344ec3d3c3e25ac001c4655`.
+GDB17 experiment plan SHA-256: `9396758d6a6b9ce6331d9cf0cbd7b9c9ea0ee9a2db2abfe2b6bda97a3f0d0ad4`.
