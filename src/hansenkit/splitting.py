@@ -12,7 +12,12 @@ from .data import Dataset
 
 
 def scaffold_key(smiles: str) -> str:
-    scaffold = MurckoScaffold.GetScaffoldForMol(Chem.MolFromSmiles(normalize_smiles(smiles)))
+    return scaffold_from_canonical(normalize_smiles(smiles))
+
+
+def scaffold_from_canonical(canonical: str) -> str:
+    """Internal fast path for already normalized identities; no alternate grouping policy."""
+    scaffold = MurckoScaffold.GetScaffoldForMol(Chem.MolFromSmiles(canonical))
     # All acyclic compounds share one conservative group; never silently use random splitting.
     return Chem.MolToSmiles(scaffold, isomericSmiles=False) or "ACYCLIC"
 
@@ -23,7 +28,9 @@ def grouping_keys(smiles, series=None, strategy="scaffold") -> np.ndarray:
     if strategy == "polymer_series" and (series is None or any(not s.strip() for s in series)):
         raise ValueError("Polymer-series splitting requires a series ID for every row")
     canonical = [normalize_smiles(s) for s in smiles]
-    families = [scaffold_key(s) for s in canonical] if strategy == "scaffold" else list(series)
+    families = (
+        [scaffold_from_canonical(s) for s in canonical] if strategy == "scaffold" else list(series)
+    )
     parents = list(range(len(smiles)))
 
     def find(i):

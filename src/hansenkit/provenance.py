@@ -8,14 +8,18 @@ from pydantic import Field, model_validator
 
 from .schema import StrictModel
 
-LabelKind = Literal["synthetic", "teacher_reproduction", "experimental"]
+LabelKind = Literal["synthetic", "teacher_reproduction", "experimental", "published_reference"]
 UNITS = "MPa^0.5"
 BLOCKED_NAMES = {"stefanis_data2.xlsx", "fitting_data.xlsx", "hsp_smiles.csv"}
 PERMISSIVE_LICENSES = {"MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "CC0-1.0"}
 
 
 def file_hash(path: str | Path) -> str:
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        while block := stream.read(1024 * 1024):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 class DatasetManifest(StrictModel):
@@ -39,9 +43,14 @@ class DatasetManifest(StrictModel):
     temperature_k: float = Field(default=298.15, gt=0)
     teacher_id: str | None = None
     independent_measurements: bool = False
+    # An operator's local experiment assumption is not a redistribution license.
+    audit_basis: Literal["documented_permission", "operator_assumption"] = "documented_permission"
+    restricted_asset_permission_evidence: str | None = Field(default=None, min_length=1)
 
     @model_validator(mode="after")
     def label_contract(self):
+        if self.audit_basis == "operator_assumption" and self.redistribution_allowed:
+            raise ValueError("Operator assumptions cannot authorize redistribution")
         if self.label_kind == "teacher_reproduction" and not self.teacher_id:
             raise ValueError("Teacher reproduction requires teacher_id")
         if self.label_kind == "experimental" and not self.independent_measurements:
@@ -49,7 +58,7 @@ class DatasetManifest(StrictModel):
         if self.label_kind != "teacher_reproduction" and self.teacher_id:
             raise ValueError("teacher_id belongs only to teacher reproduction datasets")
         if self.label_kind != "experimental" and self.independent_measurements:
-            raise ValueError("Synthetic or teacher labels are not independent measurements")
+            raise ValueError("Only experimental labels can claim independent measurements")
         return self
 
     def authorize(self, purpose: Literal["train", "evaluate"]) -> None:

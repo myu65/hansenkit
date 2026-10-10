@@ -1,0 +1,13 @@
+{
+  "source": "Exact quantum data source, revision and preprocessing lineage",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "label_kind": "quantum_computed_auxiliary",
+  "target_names": ["mu", "alpha", "gap", "cv", "u0", "r2"],
+  "target_units": ["Debye", "a0^3", "Hartree", "cal/mol/K", "Hartree", "a0^2"],
+  "rights_status": "pending",
+  "audit_basis": "documented_permission",
+  "permission_evidence": "Replace with the asset-specific local-use, source license and derived-weight evidence",
+  "training_allowed": false,
+  "derived_weights_allowed": false,
+  "redistribution_allowed": false
+}

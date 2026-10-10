@@ -21,9 +21,16 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   permissions are documented. Do not silently download weights or execute remote model code.
   The audited optional MoLFormer release can run through the explicit local checkpoint/review
   flags; read docs/molformer-review.md. Never broaden its immutable code/weight allowlist casually.
-- Explicitly authorized local table inspection may classify structure/headers/identities without
-  training or publishing numerical data. Keep evaluation-only data roles enforced and original
-  measurement provenance/asset permission pending until evidence clears them.
+- The user assumes audit passage for the 2026-10-10 local research experiment. Record this as
+  `audit_basis="operator_assumption"`; it does not authorize public data/model redistribution.
+  HSPiT Excel labels/coefficients remain evaluation-only and cannot supply training targets,
+  auxiliary targets, fitted features, tuning or calibration. Reserve identities/families before
+  fitting, including auxiliary QM9 learning. Published reference values with unknown measurement
+  lineage use `published_reference`, never `experimental`.
+- Research extensions may evaluate neutral large molecules and assembled nonionic polymers/
+  surfactants through explicitly qualified backends. Preserve default PoC refusals until a
+  backend's own applicable scope and validation evidence are implemented. Never invent a
+  physical accuracy claim from stable finite arithmetic or auxiliary/teacher training counts.
 
 ## Development
 

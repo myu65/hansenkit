@@ -27,13 +27,14 @@ def load_dataset(path: str | Path, manifest_path: str | Path, purpose="train") -
     path = Path(path)
     manifest = DatasetManifest.model_validate_json(Path(manifest_path).read_text(encoding="utf-8"))
     manifest.authorize(purpose)
-    if path.name.lower() in BLOCKED_NAMES:
+    if path.name.lower() in BLOCKED_NAMES and not manifest.restricted_asset_permission_evidence:
         raise ValueError("This named external dataset is blocked pending project rights review")
     if file_hash(path) != manifest.sha256:
         raise ValueError("Dataset checksum mismatch")
     if abs(manifest.temperature_k - 298.15) > 1e-6:
         raise ValueError("Temperature outside initial scope")
     ids, smiles, targets, series = [], [], [], []
+    seen_ids = set()
     with path.open(encoding="utf-8-sig", newline="") as stream:
         reader = csv.DictReader(stream)
         required = {"sample_id", "smiles", *TARGETS, "label_kind"}
@@ -53,9 +54,10 @@ def load_dataset(path: str | Path, manifest_path: str | Path, purpose="train") -
             values = np.array([float(row[t]) for t in TARGETS])
             if not np.isfinite(values).all() or (values < 0).any():
                 raise ValueError(f"Targets must be finite and nonnegative at row {index}")
-            if not row["sample_id"].strip() or row["sample_id"] in ids:
+            if not row["sample_id"].strip() or row["sample_id"] in seen_ids:
                 raise ValueError("sample_id must be nonempty and unique")
             ids.append(row["sample_id"])
+            seen_ids.add(row["sample_id"])
             smiles.append(record.smiles)
             targets.append(values)
             series.append(row.get("polymer_series", ""))
