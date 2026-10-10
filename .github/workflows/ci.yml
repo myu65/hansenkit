@@ -21,10 +21,10 @@ jobs:
           version: '0.12.9'
           enable-cache: true
           python-version: ${{ matrix.python }}
-      - run: uv sync --locked --extra lightgbm
+      - run: uv sync --locked --extra lightgbm --extra solvation-data
       - run: uv run ruff check .
       - run: uv run ruff format --check .
-      - run: uv run pytest
+      - run: uv run --extra lightgbm --extra solvation-data pytest
       - run: uv run hansenkit synthetic --out runs/ci-data
       - run: uv run hansenkit compare --data runs/ci-data/synthetic.csv --manifest runs/ci-data/manifest.json --out runs/ci-models --include-lightgbm
       - run: uv run hansenkit predict --model runs/ci-models/A-ridge.json --input examples/predict.csv --output runs/ci-predictions.csv
