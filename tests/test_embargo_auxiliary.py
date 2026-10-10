@@ -1,10 +1,13 @@
+import json
+
 import numpy as np
 import pytest
 
-from hansenkit.auxiliary import AuxiliaryManifest, fit_auxiliary
+from hansenkit.auxiliary import AuxiliaryManifest, fit_auxiliary, save_auxiliary
 from hansenkit.embargo import HoldoutEmbargo
 from hansenkit.encoders import MorganEncoder
 from hansenkit.provenance import file_hash
+from hansenkit.splitting import GROUPING_POLICY
 
 
 def test_holdout_blocks_canonical_scaffold_and_series():
@@ -84,6 +87,11 @@ def test_auxiliary_fit_round_trip_and_scaffold_counts(synthetic, tmp_path):
     state, report = fit_auxiliary(path, manifest, encoder, HoldoutEmbargo.from_smiles([]))
     assert report["scaffold_overlap"] == 0 and report["hsp_training_rows"] == 0
     assert report["quantum_training_rows"] + report["quantum_test_rows"] == len(data.smiles)
+    assert state["grouping_policy"] == report["grouping_policy"] == GROUPING_POLICY
+    model_path = tmp_path / "auxiliary.json"
+    save_auxiliary(state, model_path)
+    restored = json.loads(model_path.read_text(encoding="utf-8"))
+    assert restored["grouping_policy"] == restored["report"]["grouping_policy"] == GROUPING_POLICY
     head = LinearHead.restore(state["head"])
     x = encoder.transform(data.smiles[:5])
     assert np.isfinite(head.predict(x)).all()

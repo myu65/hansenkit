@@ -102,8 +102,9 @@ eligible for future HSP fitting, with unresolved identities still requiring revi
 results are not relabeled as independent tests of the newly reserved supplementary population.
 The fixed quantum head was rescored on 19,140 old test rows after removing 317 newly reserved
 rows; its 69,142 fitted rows had zero conflicts under the then-current strict-Murcko
-reservation. The [new tautomer/core policy](tautomer-isolation.md) requires reconstruction
-and a new audit of that training population; the old zero count is not current-policy clearance.
+reservation. The [current-policy reconstruction and audit](qm9-current-policy.md)
+finds 10,006 affected old training rows; the old zero count is not current-policy clearance.
+The new quantum head trains on 61,622 newly selected rows with zero reserved alias overlap.
 
 | Registered candidate / comparator | δD MAE | δP MAE | δH MAE |
 | --- | ---: | ---: | ---: |

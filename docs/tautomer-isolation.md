@@ -49,8 +49,9 @@ Its GDB17 audit was explicitly superseded before completion when core-topology
 bridges were added. The completed GDB17 audit finds 6,187/2,315/3,295 reserved
 historical train/calibration/test rows and 67/23/11 rows with incomplete grouping.
 11,445 aliases cross partitions, involving 104,394 rows. These counts also overlap.
-QM9 still needs its original training population reconstructed and audited under
-this policy. No historical head is promoted as a leakage-isolated transfer model.
+The [QM9 reconstruction and audit](qm9-current-policy.md) also finds 10,006 affected
+training rows and old partition links, requiring a new selection and refit.
+No historical head is promoted as a leakage-isolated transfer model.
 Filtering only test rows cannot repair conflicting training: prepare a new
 structure-only population, freeze a new plan and refit. Exact old metrics remain
 historical diagnostics, not evidence of 1,000-compound HSP parity.
