@@ -223,6 +223,11 @@ def main(argv=None):
         "validate", help="Validate input JSON and assess scope without predicting"
     )
     validate.add_argument("--input", required=True)
+    chain = commands.add_parser(
+        "chain-features", help="Assemble bounded chain representatives and audit intensive features"
+    )
+    chain.add_argument("--input", required=True)
+    chain.add_argument("--output", required=True)
     train = commands.add_parser("train")
     add_training(train)
     train.add_argument("--mode", choices=("A", "B", "C"), default="A")
@@ -280,6 +285,33 @@ def main(argv=None):
         elif args.command == "validate":
             record = INPUT_ADAPTER.validate_json(Path(args.input).read_text(encoding="utf-8"))
             print(json.dumps({"kind": record.kind, **asdict(assess_scope(record))}))
+        elif args.command == "chain-features":
+            from .chains import characterize_homopolymer
+            from .intensive import INTENSIVE_NAMES
+            from .schema import PolymerInput, SurfactantInput
+            from .surfactants import characterize_surfactant
+
+            if Path(args.output).exists():
+                raise ValueError("Chain report exists; choose a fresh output")
+            record = INPUT_ADAPTER.validate_json(Path(args.input).read_text(encoding="utf-8"))
+            if isinstance(record, PolymerInput):
+                report = characterize_homopolymer(record)
+            elif isinstance(record, SurfactantInput):
+                report = characterize_surfactant(record)
+            else:
+                raise ValueError("chain-features requires a polymer or surfactant record")
+            report["feature_names"] = INTENSIVE_NAMES
+            write_json(args.output, report)
+            print(
+                json.dumps(
+                    {
+                        "output": args.output,
+                        "hsp_predictions": None,
+                        "physical_accuracy_validated": False,
+                        "issues": report["issues"],
+                    }
+                )
+            )
         elif args.command in {"train", "compare"}:
             dataset = load_dataset(args.data, args.manifest)
             dataset.manifest.authorize("evaluate")

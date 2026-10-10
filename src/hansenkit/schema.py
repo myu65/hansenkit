@@ -35,12 +35,19 @@ class RepeatUnit(StrictModel):
         canonical = normalize_smiles(value)
         mol = molecule(canonical)
         ports = [a for a in mol.GetAtoms() if a.GetAtomicNum() == 0]
-        if len(ports) != 2 or any(p.GetDegree() != 1 for p in ports):
+        if len(ports) != 2 or any(
+            p.GetDegree() != 1
+            or p.GetBonds()[0].GetBondType() != Chem.BondType.SINGLE
+            or p.GetNeighbors()[0].GetAtomicNum() == 0
+            for p in ports
+        ):
             raise ValueError(
                 "Repeat units require exactly two singly attached '*' connection ports"
             )
         if len(Chem.GetMolFrags(mol)) != 1:
             raise ValueError("Repeat unit must be connected")
+        if sorted(p.GetIsotope() for p in ports) not in ([0, 0], [1, 2]):
+            raise ValueError("Use unlabeled ports or distinct isotope ports [1*] and [2*]")
         return canonical
 
 
@@ -54,7 +61,14 @@ class EndGroup(StrictModel):
         canonical = normalize_smiles(value)
         mol = molecule(canonical)
         ports = [a for a in mol.GetAtoms() if a.GetAtomicNum() == 0]
-        if len(ports) != 1 or ports[0].GetDegree() != 1:
+        if (
+            len(ports) != 1
+            or ports[0].GetDegree() != 1
+            or (
+                ports[0].GetBonds()[0].GetBondType() != Chem.BondType.SINGLE
+                or ports[0].GetNeighbors()[0].GetAtomicNum() == 0
+            )
+        ):
             raise ValueError("End group requires one singly attached '*' connection port")
         if len(Chem.GetMolFrags(mol)) != 1:
             raise ValueError("End group must be connected")
@@ -65,6 +79,7 @@ class EOPODistribution(StrictModel):
     eo_mean: float = Field(ge=0)
     po_mean: float = Field(ge=0)
     sequence: Literal["block", "random", "specified", "unknown"] = "unknown"
+    block_order: Literal["eo_then_po", "po_then_eo"] | None = None
     distribution: Literal["monodisperse", "poisson", "empirical", "unknown"] = "unknown"
     eo_std: float | None = Field(default=None, ge=0)
     po_std: float | None = Field(default=None, ge=0)
@@ -77,6 +92,8 @@ class EOPODistribution(StrictModel):
 
         if self.eo_mean + self.po_mean <= 0:
             raise ValueError("EO/PO distribution must have nonzero chain length")
+        if self.block_order is not None and self.sequence != "block":
+            raise ValueError("block_order requires sequence=block")
         if self.distribution == "empirical":
             if not self.joint_pmf:
                 raise ValueError("Empirical distribution needs a joint PMF")
@@ -89,6 +106,10 @@ class EOPODistribution(StrictModel):
             for mean, pos in ((self.eo_mean, 0), (self.po_mean, 1)):
                 if abs(sum(row[pos] * row[2] for row in self.joint_pmf) - mean) > 1e-6:
                     raise ValueError("Declared mean disagrees with joint PMF")
+            for mean, std, pos in ((self.eo_mean, self.eo_std, 0), (self.po_mean, self.po_std, 1)):
+                actual = math.sqrt(sum((row[pos] - mean) ** 2 * row[2] for row in self.joint_pmf))
+                if std is not None and abs(actual - std) > 1e-6:
+                    raise ValueError("Declared standard deviation disagrees with joint PMF")
         elif self.joint_pmf:
             raise ValueError("joint_pmf is only allowed for an empirical distribution")
         if self.distribution == "monodisperse":

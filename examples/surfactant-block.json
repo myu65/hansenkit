@@ -1,0 +1,14 @@
+{
+  "kind": "surfactant",
+  "series_id": "example-c12-eo10-po4-structural-only",
+  "tail_smiles": "*CCCCCCCCCCCC",
+  "head_smiles": "*O",
+  "ionic": false,
+  "eo_po": {
+    "eo_mean": 10,
+    "po_mean": 4,
+    "sequence": "block",
+    "block_order": "eo_then_po",
+    "distribution": "monodisperse"
+  }
+}
