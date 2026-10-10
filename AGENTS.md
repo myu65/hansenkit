@@ -32,6 +32,9 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   auxiliary targets, fitted features, tuning or calibration. Reserve identities/families before
   fitting, including auxiliary QM9 learning. Published reference values with unknown measurement
   lineage use `published_reference`, never `experimental`.
+  Reference-descriptor auxiliary labels use `published_reference_auxiliary`, separate
+  from quantum/HSP counts. Retain scientific/private noncommercial scope in every
+  local artifact; source article licenses do not clear upstream database commercial use.
 - Research extensions may evaluate neutral large molecules and assembled nonionic polymers/
   surfactants through explicitly qualified backends. Preserve default PoC refusals until a
   backend's own applicable scope and validation evidence are implemented. Never invent a

@@ -96,3 +96,53 @@ def test_auxiliary_fit_round_trip_and_scaffold_counts(synthetic, tmp_path):
     x = encoder.transform(data.smiles[:5])
     assert np.isfinite(head.predict(x)).all()
     np.testing.assert_array_equal(head.predict(x), LinearHead.restore(head.state()).predict(x))
+
+
+def test_reference_auxiliary_counts_and_use_scope_survive_reload(synthetic, tmp_path):
+    _, data, _ = synthetic
+    path = tmp_path / "reference-protocol-fixture.npz"
+    targets = np.arange(len(data.smiles), dtype=float)[:, None] / 100
+    np.savez(path, smiles=np.array(data.smiles), targets=targets, target_names=["HB_scale"])
+    manifest = AuxiliaryManifest(
+        source="Authored protocol fixture; no experimental accuracy claimed",
+        sha256=file_hash(path),
+        label_kind="published_reference_auxiliary",
+        target_names=("HB_scale",),
+        target_units=("source scale",),
+        rights_status="approved",
+        audit_basis="documented_permission",
+        permission_evidence="Authored fixture testing retained noncommercial metadata",
+        training_allowed=True,
+        derived_weights_allowed=True,
+        use_scope="scientific_private_noncommercial",
+    )
+    state, report = fit_auxiliary(path, manifest, MorganEncoder(), HoldoutEmbargo.from_smiles([]))
+    assert report["task"] == "reference_descriptor_auxiliary"
+    assert report["reference_descriptor_training_rows"] + report[
+        "reference_descriptor_test_rows"
+    ] == len(data.smiles)
+    assert report["hsp_training_rows"] == 0 and "quantum_training_rows" not in report
+    model_path = tmp_path / "reference-head.json"
+    save_auxiliary(state, model_path)
+    saved = json.loads(model_path.read_text(encoding="utf-8"))
+    reviewed = AuxiliaryManifest.model_validate(saved["manifest"])
+    reviewed.authorize()
+    assert reviewed.use_scope == "scientific_private_noncommercial"
+    assert saved["report"]["real_hsp_accuracy_validated"] is False
+
+
+@pytest.mark.parametrize("audit", ["documented_permission", "operator_assumption"])
+def test_noncommercial_auxiliary_manifest_cannot_grant_redistribution(audit):
+    with pytest.raises(ValueError, match="noncommercial use"):
+        AuxiliaryManifest(
+            source="test",
+            sha256="0" * 64,
+            label_kind="published_reference_auxiliary",
+            target_names=("A",),
+            target_units=("source scale",),
+            rights_status="approved",
+            audit_basis=audit,
+            permission_evidence="test",
+            use_scope="scientific_private_noncommercial",
+            redistribution_allowed=True,
+        )

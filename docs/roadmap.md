@@ -27,6 +27,10 @@
 - [Train-only component selection](train-only-selection.md) adds a constant/ridge family-CV
   helper and audits nested hybrid residual selection. It modestly lowers some H-bond errors
   but worsens polar transfer; the same 1,013-structure experiment still fails all-three noninferiority.
+- [Abraham reference auxiliary transfer](abraham-auxiliary.md) fits 435 HSP-isolated solutes
+  and evaluates 186 others. Descriptor augmentation lowers some HSP dispersion errors,
+  but D/H noninferiority still fails; source commercial restrictions and missing lineage
+  prevent a public/physical model claim.
 
 ## M2 — Polymers and long-chain surfactants
 
