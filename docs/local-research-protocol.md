@@ -90,6 +90,14 @@ eligible for supervised HSP fitting; individual outer folds used 113–176. No w
 value or GC prediction supplied any training feature, target or residual. Full reports, predictions,
 saved heads and frozen plans remain local. Public model release is not authorized.
 
+This historical experiment reserved the HSPiT workbooks known at that time. After acquiring
+the Mathieu supplement, its evaluation-only identities also require reservation. The
+[expanded source audit](identity-audit.md) leaves only 19 of those 1,030 reference structures
+eligible for future HSP fitting, with unresolved identities still requiring review. Historical
+results are not relabeled as independent tests of the newly reserved supplementary population.
+The fixed quantum head was rescored on 19,140 old test rows after removing 317 newly reserved
+rows; its 69,142 fitted rows have zero conflicts with the verified expanded reservation.
+
 | Registered candidate / comparator | δD MAE | δP MAE | δH MAE |
 | --- | ---: | ---: | ---: |
 | A: original group and descriptor densities + ridge | 0.993 | 2.992 | 1.868 |
@@ -111,8 +119,10 @@ as independently verified experimental accuracy or as fulfillment of the complet
 
 ## Remaining work
 
-Verify existing GC atom counting and original equations; establish the 1,000-compound HSP
-comparison; compare A/B/C with train-only selection and independent Excel evaluation; test
-auxiliary transfer against a no-auxiliary control. Add qualified polymer/end-group/EO–PO
+Complete identity/reference-lineage reconciliation and expand measured training data outside
+the reserved families; establish the 1,000-compound HSP comparison; compare A/B/C with
+train-only selection and independent Excel evaluation; test auxiliary transfer against a
+no-auxiliary control. The [original-method comparison](mathieu-reference-audit.md) is now
+recorded, including missing-parameter failures and source overlaps. Add qualified polymer/end-group/EO–PO
 assembly and a separately validated intensive-property backend. Numerical stability alone
 does not establish physical validity for polymers, ions or mixtures.
