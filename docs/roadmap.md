@@ -24,6 +24,9 @@
   locally and compares 1,013 other structures. C and QM9 augmentation pass the numerical
   polar criterion only; all methods fail the dispersion/H-bond criteria. Independent measured
   noninferiority remains unproven; no calibrated interval or qualified material backend follows.
+- [Train-only component selection](train-only-selection.md) adds a constant/ridge family-CV
+  helper and audits nested hybrid residual selection. It modestly lowers some H-bond errors
+  but worsens polar transfer; the same 1,013-structure experiment still fails all-three noninferiority.
 
 ## M2 — Polymers and long-chain surfactants
 

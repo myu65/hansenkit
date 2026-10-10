@@ -18,6 +18,8 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   Grouping keys never replace encoder inputs; partial enumeration cannot certify isolation.
   Reaudit historical fits and refit conflicts; never repair contaminated training by filtering test only.
   Fit preprocessing, residual models, OOD references, and uncertainty using training/calibration only.
+  Select hyperparameters inside training-family folds. For hybrid selection, reconstruct
+  residual targets inside each outer training partition; held-out labels cannot enter their base selection.
 - Reject unsupported polymers, mixtures, ionic molecules and EO/PO surfactants during inference.
   Schema support is not a scientific applicability claim. No guessed HSP fallback.
 - Pretrained encoders are off until weights, code, dependencies, exact revision, and execution
