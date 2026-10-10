@@ -19,6 +19,13 @@ for cleared representative small-molecule/oligomer family experiments.
 Default proportions are approximately 60/20/20 of groups, not a guarantee of those row proportions.
 MAE/RMSE/R² are reported for δD/δP/δH in MPa^0.5. R² is null for constant or singleton truth.
 External holdout evaluation refuses canonical and scaffold/family overlaps with training.
+The direct Python calibration/evaluation APIs apply the same checks. Calibration additionally
+requires training permission: evaluation-only workbook labels cannot fit target-dependent
+interval scores. Calibration identities/families are saved in the artifact, and evaluation
+refuses their reuse even after reload. Different SMILES within a training/calibration family
+are still overlaps. Missing series metadata, invalid row indices and caller groups that split
+one family into several independent scores are rejected. Older calibrated artifacts lacking
+family provenance need recalibration with a cleared disjoint dataset before new evaluation.
 
 OOD is a diagnostic threshold (nearest training Morgan Tanimoto <0.35), not a validated domain
 classifier. Extrapolation means a chemical feature lies beyond a training feature range. Reports
