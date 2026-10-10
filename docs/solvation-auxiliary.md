@@ -101,12 +101,61 @@ radical/dummy, 71,855 missing/nonfinite, five invalid, six unstable and six conf
 duplicate rows. The conflicting duplicate rows represent three excluded identities.
 There is no source-target clipping, zero filling or HSP-error-based selection.
 
-## Completed local A/B/C comparisons
+## Current-policy local A/B/C refits
+
+After the complete historical audit, structures were selected again with
+`canonical+strict-murcko+core-topology+bounded-tautomer-v1`. Eligibility and grouping
+use no HSP values or source prediction errors. Fixed features/embeddings and source
+targets are unchanged; the source targets remain computed solvation energies at
+300 K. Ridge alpha 100 and the four-fold residual procedure are unchanged.
+The new partitions were frozen before fitting; historical source results had already
+been explored, so these are not newly blinded benchmarks.
+
+| Experiment | Train / calibration / test molecules | A mean MAE / RMSE | B mean MAE / RMSE | C mean MAE / RMSE |
+| --- | --- | --- | --- | --- |
+| EGP, current-policy groups | 3,462 / 496 / 1,586 | 2.641 / 3.590 | 2.862 / 3.765 | 2.862 / 3.822 |
+| GDB17, current-policy groups; all EGP cores reserved | 97,619 / 30,665 / 31,094 | 1.060 / 1.480 | 1.059 / 1.462 | 0.938 / 1.338 |
+
+Units are kcal/mol. MAE averages all 39 target columns; RMSE averages the 39
+per-target RMSEs. EGP has 408/137/137 train/calibration/test groups; GDB17 has
+46,414/15,472/15,472. See the [selection and rejection counts](tautomer-isolation.md).
+The full cached alias population has zero overlap with HSP reservations and zero
+train/calibration/test alias overlap. An independent pre-fit check also verifies
+every selected GDB17 structure against all 730 external EGP core keys.
+
+C reduces GDB17 MAE by 11.5% versus A; B differs from A by only about 0.001 kcal/mol.
+GDB17 mean per-target R2 is 0.704/0.708/0.757 for A/B/C. On EGP, B/C worsen MAE
+and their mean R2 is 0.008/-0.023, versus A's 0.098. No model is selected or refitted
+using these test results. Changed populations and partitions prevent interpreting
+differences from historical metrics as an improvement caused by the isolation fix.
+
+Saved JSON heads reproduce predictions; an independent process recomputes all 39
+MAE/RMSE/R2 values, calibration-family-max radii and row/family coverage. GDB17's
+mean per-target complete-family coverage is 0.900/0.899/0.900 for the nominal 90%
+intervals; EGP's is 0.876/0.905/0.902. The minimum across EGP solvents is
+0.839/0.869/0.861, so nominal coverage is not established across every target or
+source. These are diagnostics, without a physical or exchangeability guarantee.
+Feature-box OOD identifies 56 EGP test rows and three GDB17 test rows; all test
+families are unseen even if their feature coordinates lie inside that box.
+
+No new current-policy cross-source transfer result is claimed here. The historical
+negative-R2 transfer results below remain a warning requiring a fresh fixed-head
+diagnostic. No HSP targets, Excel coefficients or public trained weights result
+from these fits, and no polymer/surfactant numerical backend is qualified.
+
+Immutable EGP/GDB17 plan SHA-256 values:
+`2a6bf9682b29410e131f684f982a8284a3040ddeb9ee69ed637eb58846eceb27` /
+`57cb4991d778a03236ca5e2dc41feeac357e90353c4c79173dc3e42b31feb821`.
+Selection SHA-256 values:
+`e24b07c0e0db1c92d11f4c20e343d8d07a913e130784db652e2ffe6776688c77` /
+`eb31710bfd7b4dacd51fa461f0ebad873bd5c9d278303d334800e2ae3fb8398f`.
+
+## Historical local A/B/C comparisons
 
 These are historical results under their original strict-Murcko policy.
-The [stronger tautomer/core audit](tautomer-isolation.md) finds EGP training and
-partition conflicts and requires a new plan/refit. The GDB17 stronger-policy audit
-is pending. The metrics below remain unchanged; they do not certify isolation
+The [stronger tautomer/core audit](tautomer-isolation.md) finds EGP and GDB17 training
+and partition conflicts. Both populations have been selected again for new plans
+and refits. The metrics below remain unchanged; they do not certify isolation
 under the current grouping policy or qualify an HSP transfer backend.
 
 All models use Ridge alpha 100; A has 105 original chemical features, B has the
@@ -115,7 +164,8 @@ residual head trained on four inner folds with whole training families separated
 The chemical features add absolute counts for extensive solvation targets to the
 existing density descriptors. Incomplete group coverage is explicit; no catch-all
 group is invented. Preprocessing, residual training and feature-box OOD bounds use
-training only. Calibration/test populations and identities/families are disjoint.
+training only. Calibration/test populations and identities/families were disjoint
+under the original strict-Murcko policy; the new audit finds stronger-policy links.
 Per-target 90% intervals use calibration-family maximum absolute errors. They are
 diagnostics, not guaranteed physical coverage or a simultaneous 39-target interval.
 
@@ -135,8 +185,9 @@ held-family experiment demonstrates no improvement from B/C over A. No test-base
 model selection or refitting is performed. All saved model JSONs reproduce predictions
 after reload; every solvent's MAE/RMSE/R2 and interval coverage is retained locally.
 
-Source-transfer diagnostics apply each GDB17 model to all 8,268 EGP molecules with
-zero identity/family overlap. This previously explored EGP population is not a new
+Historical source-transfer diagnostics apply each GDB17 model to all 8,268 EGP
+molecules with zero overlap under the original strict-Murcko policy. The stronger
+audit requires a new fit before a current-policy claim. This explored EGP population is not a new
 blind benchmark. A/B/C mean MAE is 3.207/3.291/3.137 and mean RMSE is
 4.390/4.243/4.361 kcal/mol. **Every solvent's R2 is negative for all three models**;
 mean R2 is -0.279/-0.195/-0.262. A small relative MAE reduction does not establish
