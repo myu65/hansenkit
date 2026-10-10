@@ -241,3 +241,39 @@ def test_cli_csv_end_to_end(tmp_path):
     assert rows[1]["status"] == "unsupported" and rows[1]["delta_d"] == ""
     assert rows[2]["status"] == "invalid_input" and rows[2]["delta_h"] == ""
     assert all(row["label_kind"] == "synthetic" for row in rows)
+
+
+def test_chain_features_cli_scientific_status_and_no_overwrite(tmp_path):
+    input_path, output_path = tmp_path / "chain.json", tmp_path / "features.json"
+    input_path.write_text(
+        json.dumps(
+            {
+                "kind": "polymer",
+                "series_id": "original-test-peg",
+                "repeat_units": [{"smiles": "[1*]CCO[2*]", "mole_fraction": 1}],
+                "mn_g_mol": 1000000000,
+                "architecture": "linear",
+            }
+        )
+    )
+    command = [
+        sys.executable,
+        "-m",
+        "hansenkit.cli",
+        "chain-features",
+        "--input",
+        str(input_path),
+        "--output",
+        str(output_path),
+    ]
+    subprocess.run(command, check=True, capture_output=True)
+    result = json.loads(output_path.read_text())
+    assert result["hsp_predictions"] is None
+    assert result["physical_accuracy_validated"] is False
+    assert len(result["features"]) == len(result["feature_names"])
+    assert result["max_explicit_atoms"] < 300
+    assert "unknown_end_groups_hydrogen_capped_representatives" in result["issues"]
+    before = output_path.read_bytes()
+    repeated = subprocess.run(command, capture_output=True)
+    assert repeated.returncode == 2
+    assert output_path.read_bytes() == before

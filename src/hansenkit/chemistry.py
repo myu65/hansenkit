@@ -94,7 +94,7 @@ def atom_coverage(smiles: str) -> Coverage:
     owners: dict[int, str] = {}
     counts = dict.fromkeys((r.name for r in RULES), 0)
     for rule, query in zip(RULES, queries(), strict=True):
-        for match in sorted(mol.GetSubstructMatches(query, uniquify=True)):
+        for match in sorted(mol.GetSubstructMatches(query, uniquify=True, maxMatches=0)):
             owned = tuple(match[i] for i in rule.owned_query_atoms)
             if any(idx in owners for idx in owned):
                 continue

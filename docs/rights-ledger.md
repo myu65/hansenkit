@@ -9,6 +9,7 @@ It does not vendor dependency wheels, external weights, HSP numerical tables or 
 | Project code, SMARTS rules, schema, synthetic generator | Original work; [MIT](../LICENSE) | Included | Retain MIT notice |
 | Synthetic label formula | `hansenkit.data`; original arbitrary formula, MIT | Included as generator; no physical coefficients | Never call its results measured HSP |
 | RDKit | [Official license](https://github.com/rdkit/rdkit/blob/master/license.txt), BSD-3-Clause | Default dependency | Preserve upstream notices if packaging binaries |
+| RDKit Crippen descriptor parameter table | Installed RDKit `Data/Crippen.txt`, BSD header; [official descriptor source](https://github.com/rdkit/rdkit/blob/master/Code/GraphMol/Descriptors/Crippen.cpp) | Read through dependency; not vendored; complete atom typing in the research chain descriptor | Record installed table hash/version; chemical LogP/MR descriptor parameters, not HSP Excel coefficients |
 | NumPy | [Official license](https://github.com/numpy/numpy/blob/main/LICENSE.txt), BSD-3-Clause plus bundled-component notices | Default dependency | Audit the exact wheel if redistributing it |
 | scikit-learn | [Official license](https://github.com/scikit-learn/scikit-learn/blob/main/COPYING), BSD-3-Clause | Default dependency | Same; review transitive packages |
 | Pydantic | [Official license](https://github.com/pydantic/pydantic/blob/main/LICENSE), MIT | Default dependency | Review core and wheel notices |

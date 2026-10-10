@@ -15,6 +15,8 @@ OOD・外挿判定、校正用データを分離した予測区間、CLIとCSV�
 QM9の量子物性を別タスクとして学習する `auxiliary-fit` を追加しています。
 [実験条件と未達の目標](docs/local-research-protocol.md) を参照してください。
 補助学習の件数や既存手法の比較結果は、hansenkitの実測HSP精度を証明するものではありません。
+`chain-features` で繰返し単位・末端基・Mn・EO/POの構造と質量を検証できるようになりました。
+[長鎖の計算手順](docs/chain-features.md) を参照してください。構造計算はHSP精度の検証とは区別します。
 
 | 方式 | 初期PoC |
 | --- | --- |
