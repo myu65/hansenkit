@@ -57,6 +57,22 @@ is another candidate. Its listing declares CC BY 4.0 and a workflow file, but th
 have not yet been inspected locally. Do not assume scalar Hildebrand parameters or binary
 solubility measurements are three-component HSP labels.
 
+## 2026 GT-PolySol availability
+
+The [primary article](https://doi.org/10.1038/s41524-026-02109-7) reports 10,488
+solvents and 613 polymers from licensed HSPiP 6.1.02 data. These counts do not
+establish independently measured or reusable training labels. Its article license
+is CC BY-NC-ND 4.0 with third-party-material exceptions.
+
+The [author repository](https://github.com/RuiyiFang/TLGNNPPSP) at
+`5f6c4076c183db42bfef84c3ec1181bbb33a90be` has no detected license file or
+numerical dataset/checkpoint file in its complete pinned tree. The README describes
+two CSVs, a fragment pickle and a trained checkpoint that are absent from that tree;
+its inline prediction examples are not ground truth. Only metadata and README were
+acquired, with the README Git blob verified. No upstream implementation, weights,
+labels or dependency installation were adopted. A separate EuropePMC metadata request
+timed out; it does not change the verified repository inventory.
+
 ## Calculators require formula and atom-count checks
 
 [early-screening-des](https://github.com/iehoshva/early-screening-des) at

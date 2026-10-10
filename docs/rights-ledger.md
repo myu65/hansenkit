@@ -49,6 +49,18 @@ It does not vendor dependency wheels, external weights, HSP numerical tables or 
 | BigSolDB v2.1 author-hosted CSV | [Publisher card](https://huggingface.co/datasets/levakrasnov/BigSolDBv2.1) at `8d7442c123d417fe4c18fd91524c176ede359f27`, CC BY 4.0 | Original LFS-SHA-256-verified inventory permissions stay off; a separate exact-plan/subset operator-assumption review permits the local [fixed-coordinate reference logS fit](fixed-coordinate-solubility.md); no HSP labels or redistribution | Individual assay/density/phase lineage remains uncertified; HSP calibration and material validation remain open; solvent graphs are not fitted, and neither the inventory nor the coordinate task authorizes a molecular pair model |
 | 2026 green-solvent lists and Wolfram 211-solvent compilation | [Green guide](https://doi.org/10.1039/d6su00271d), [Wolfram source metadata](https://datarepository.wolframcloud.com/resources/JoshuaSchrier_Hansen-Solubility-Parameters) | Source inventory only; existing table lineage, not new measured labels | Asset-specific table rights, identifiers, overlap and measurement lineage; no numerical tables or teacher outputs included |
 
+The [MD response-transfer experiment](md-response-transfer.md) has a separate local
+operator-assumption review for the immutable computed-cohesion heads' two centered
+structural responses. They are learned auxiliary coordinates, not absolute HSP
+predictions, guessed chain conditions, or separate polar/hydrogen targets. Original
+preparation permissions and nonredistribution decisions remain unchanged.
+
+The [GT-PolySol author repository](https://github.com/RuiyiFang/TLGNNPPSP) at
+`5f6c4076c183db42bfef84c3ec1181bbb33a90be` has no detected repository license or
+numeric dataset/checkpoint files. [Availability review](related-reference-review.md)
+keeps code execution, training and redistribution off; a paper's licensed HSPiP
+data and CC BY-NC-ND article do not confer reuse rights to this project.
+
 No published HSP model predictions supplied training labels or fitted features. Published models were
 run only as local comparison diagnostics; their outputs are not independent truth.
 CI creates only original

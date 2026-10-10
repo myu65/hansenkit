@@ -31,6 +31,10 @@
   and evaluates 186 others. Descriptor augmentation lowers some HSP dispersion errors,
   but D/H noninferiority still fails; source commercial restrictions and missing lineage
   prevent a public/physical model claim.
+- [Frozen MD structural-response transfer](md-response-transfer.md) reuses the 17,833-row
+  computed-cohesion heads without guessing chain conditions. Three fixed response augmentations
+  fail all-three noninferiority on the same 1,013 reference structures and worsen dispersion;
+  source-domain calibration and independently measured molecular HSP remain necessary.
 
 ## M2 — Polymers and long-chain surfactants
 
