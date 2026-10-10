@@ -184,6 +184,35 @@ def auxiliary_training(args):
     print(json.dumps(report))
 
 
+def solquest_preparation(args):
+    from .auxiliary import AuxiliaryManifest
+    from .embargo import HoldoutEmbargo
+    from .provenance import file_hash
+    from .solquest import prepare_solquest
+
+    reserved = json.loads(Path(args.reserved_identities).read_text(encoding="utf-8"))
+    if not isinstance(reserved, dict) or not isinstance(reserved.get("smiles"), list):
+        raise ValueError("Reserved identities must be a JSON object with a smiles list")
+    if not reserved["smiles"]:
+        raise ValueError("Explicit nonempty HSP holdout identities are required")
+    embargo = HoldoutEmbargo.from_smiles(reserved["smiles"], reserved.get("series", ()))
+    review = AuxiliaryManifest.model_validate_json(
+        Path(args.source_review).read_text(encoding="utf-8")
+    )
+    report = prepare_solquest(args.source, args.out, review, embargo)
+    report["reserved_identities_sha256"] = file_hash(args.reserved_identities)
+    write_json(Path(args.out) / "preparation.json", report)
+    print(
+        json.dumps(
+            {
+                k: v
+                for k, v in report.items()
+                if k not in {"source_row_indices", "rejected_source_rows"}
+            }
+        )
+    )
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Hansen research PoC. Synthetic metrics are not real accuracy."
@@ -199,6 +228,17 @@ def main(argv=None):
     )
     fetch.add_argument("--out", required=True)
     fetch.add_argument("--checkpoint-review", required=True)
+    solquest = commands.add_parser(
+        "solquest-prepare", help="Prepare reviewed local computed-solvation targets without fitting"
+    )
+    solquest.add_argument(
+        "--source", required=True, help="Local flat SolQuest JSON or one-JSON ZIP"
+    )
+    solquest.add_argument(
+        "--source-review", required=True, help="Raw-source AuxiliaryManifest JSON"
+    )
+    solquest.add_argument("--reserved-identities", required=True, help="Full HSP/Excel smiles JSON")
+    solquest.add_argument("--out", required=True)
     auxiliary = commands.add_parser(
         "auxiliary-fit", help="Train quantum auxiliary targets with an HSP holdout embargo"
     )
@@ -267,6 +307,8 @@ def main(argv=None):
 
             directory = fetch_checkpoint(args.out, args.checkpoint_review)
             print(json.dumps({"checkpoint": str(directory), "network_requested_explicitly": True}))
+        elif args.command == "solquest-prepare":
+            solquest_preparation(args)
         elif args.command == "auxiliary-fit":
             auxiliary_training(args)
         elif args.command == "features":
