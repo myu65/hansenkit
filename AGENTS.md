@@ -42,6 +42,9 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   Read docs/md-cohesion.md. Electrostatic and short/long Coulomb terms are not separate
   delta_p/delta_h labels. Preserve unknown material/end fields; qualify periodic polymer
   families, conditions and source execution before enabling any fitting or HSP inference.
+- Periodic topology aliases are grouping-only; preserve original chemistry and existing
+  reservation links. Source-consistent MD property heads need a separate exact-plan fitting
+  review and remain computed-reference artifacts, never independent HSP measurements.
 
 ## Development
 
