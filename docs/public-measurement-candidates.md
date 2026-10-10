@@ -52,6 +52,16 @@ box. No HSP predictions or equilibrium-solubility accuracy claims follow. The
 diagnostic uses historical auxiliary heads; the current [stronger isolation audit](tautomer-isolation.md)
 requires their refit before any qualified transfer claim.
 
+A separate [2019 primary polyester study](https://doi.org/10.3389/fchem.2019.00375)
+provides 21 source-material records with measured-relative SEC Mn/dispersity and
+experimentally derived sphere centers. The [recipe exploration](polyester-recipe-exploration.md)
+locally fits these records under an exact, separate review and tests both 11
+ingredient-support families and three broader polyester families. It does not
+alter the preparation-only decisions for the previous 28 candidates. Numerical
+HSP temperature, product sequence/stereo/ends remain unknown; zero rows qualify
+as 298.15 K molecular HSP truth. No structures are guessed, and its heads remain
+unqualified material-recipe artifacts rather than a molecular/physical HSP backend.
+
 ## Compilations and solvent-design tools
 
 The [Wolfram 211-solvent resource](https://datarepository.wolframcloud.com/resources/JoshuaSchrier_Hansen-Solubility-Parameters)
