@@ -161,6 +161,29 @@ def external_evaluation(args):
     write_json(args.report, report)
 
 
+def auxiliary_training(args):
+    from .auxiliary import AuxiliaryManifest, fit_auxiliary, save_auxiliary
+    from .embargo import HoldoutEmbargo
+    from .provenance import file_hash
+
+    if Path(args.model).exists() or Path(args.report).exists():
+        raise ValueError("Auxiliary outputs exist; choose fresh files")
+    reserved = json.loads(Path(args.reserved_identities).read_text(encoding="utf-8"))
+    if not isinstance(reserved, dict) or not isinstance(reserved.get("smiles"), list):
+        raise ValueError("Reserved identities must be a JSON object with a smiles list")
+    if not reserved["smiles"]:
+        raise ValueError("Explicit nonempty HSP holdout identities are required")
+    embargo = HoldoutEmbargo.from_smiles(reserved["smiles"], reserved.get("series", ()))
+    manifest = AuxiliaryManifest.model_validate_json(
+        Path(args.manifest).read_text(encoding="utf-8")
+    )
+    state, report = fit_auxiliary(args.data, manifest, configured_encoder(args), embargo, args.seed)
+    report["reserved_identities_sha256"] = file_hash(args.reserved_identities)
+    save_auxiliary(state, args.model)
+    write_json(args.report, report)
+    print(json.dumps(report))
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(
         description="Hansen research PoC. Synthetic metrics are not real accuracy."
@@ -176,6 +199,18 @@ def main(argv=None):
     )
     fetch.add_argument("--out", required=True)
     fetch.add_argument("--checkpoint-review", required=True)
+    auxiliary = commands.add_parser(
+        "auxiliary-fit", help="Train quantum auxiliary targets with an HSP holdout embargo"
+    )
+    auxiliary.add_argument("--data", required=True, help="NPZ: smiles, targets, target_names")
+    auxiliary.add_argument("--manifest", required=True)
+    auxiliary.add_argument(
+        "--reserved-identities", required=True, help="JSON: smiles, optional series"
+    )
+    auxiliary.add_argument("--model", required=True)
+    auxiliary.add_argument("--report", required=True)
+    auxiliary.add_argument("--seed", type=int, default=42)
+    add_encoder(auxiliary)
     features = commands.add_parser(
         "features", help="Normalize and inspect atom ownership and features"
     )
@@ -227,6 +262,8 @@ def main(argv=None):
 
             directory = fetch_checkpoint(args.out, args.checkpoint_review)
             print(json.dumps({"checkpoint": str(directory), "network_requested_explicitly": True}))
+        elif args.command == "auxiliary-fit":
+            auxiliary_training(args)
         elif args.command == "features":
             coverage = atom_coverage(args.smiles)
             output = {**asdict(coverage), "coverage_fraction": coverage.fraction}

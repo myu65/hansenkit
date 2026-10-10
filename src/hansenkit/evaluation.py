@@ -79,10 +79,9 @@ def calibrate(model: HSPModel, dataset: Dataset, indices, groups, encoder=None, 
 
 def evaluate(model: HSPModel, dataset: Dataset, indices, groups, encoder=None):
     dataset.manifest.authorize("evaluate")
-    if (
-        dataset.manifest.label_kind != model.provenance["label_kind"]
-        and dataset.manifest.label_kind != "experimental"
-    ):
+    if dataset.manifest.label_kind != model.provenance[
+        "label_kind"
+    ] and dataset.manifest.label_kind not in {"experimental", "published_reference"}:
         raise ValueError(
             "Use matching labels or a separately cleared independent experimental evaluation"
         )

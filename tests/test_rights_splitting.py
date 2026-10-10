@@ -40,6 +40,30 @@ def test_named_external_data_remains_blocked(synthetic, tmp_path):
         load_dataset(path, manifest)
 
 
+def test_explicit_local_asset_assumption_is_scoped_and_does_not_release_data(synthetic, tmp_path):
+    paths, dataset, _ = synthetic
+    path = tmp_path / "HSP_SMILES.csv"
+    path.write_bytes(paths[0].read_bytes())
+    manifest = dataset.manifest.model_dump() | {
+        "audit_basis": "operator_assumption",
+        "restricted_asset_permission_evidence": "Explicit local test authorization for this hash",
+        "redistribution_allowed": False,
+    }
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest))
+    assert len(load_dataset(path, manifest_path).smiles) == len(dataset.smiles)
+    with pytest.raises(ValueError, match="redistribution"):
+        type(dataset.manifest).model_validate(manifest | {"redistribution_allowed": True})
+
+
+def test_published_reference_cannot_claim_independent_measurement(synthetic):
+    _, dataset, _ = synthetic
+    manifest = dataset.manifest.model_dump() | {"label_kind": "published_reference"}
+    assert type(dataset.manifest).model_validate(manifest).label_kind == "published_reference"
+    with pytest.raises(ValueError, match="Only experimental"):
+        type(dataset.manifest).model_validate(manifest | {"independent_measurements": True})
+
+
 def test_label_kind_contract(synthetic):
     _, dataset, _ = synthetic
     with pytest.raises(ValueError, match="teacher_id"):
