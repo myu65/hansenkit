@@ -71,8 +71,11 @@ candidate, not a validated fallback for ions or large molecules.
 calculated/reference values and a Python implementation. It distinguishes measured and
 estimated validation values and discusses limitations for polar groups pointing in opposite
 directions. Its supplementary assets are a priority for an equation-based comparator; they
-have not yet been obtained locally. Avoid substituting a loosely implemented repository
-calculator for the published method without checking equations, fragment counts and coverage.
+were obtained locally through the publisher's public download controls. The unchanged program
+has been run on the current reference structures, and input identity errors were found.
+[Source lineage, common-row comparison and CAS audit](mathieu-reference-audit.md) record
+the evidence. Avoid substituting a loosely implemented repository calculator for the
+published method without checking equations, fragment counts and coverage.
 
 ## Uncertainty result from our initial experiment
 
