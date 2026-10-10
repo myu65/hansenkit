@@ -81,6 +81,27 @@ def test_conflicting_duplicates_are_all_excluded_not_first_selected(tmp_path):
         assert arrays["smiles"].tolist() == ["C1CCC1"]
 
 
+def test_unstable_identity_has_a_specific_original_row_rejection(tmp_path, monkeypatch):
+    from hansenkit import solquest
+    from hansenkit.chemistry import UnstableSmilesError
+
+    normalizer = solquest.normalize_smiles
+
+    def reject_unstable(smiles):
+        if smiles == "C1CCC1":
+            raise UnstableSmilesError("Unstable canonical SMILES identity")
+        return normalizer(smiles)
+
+    monkeypatch.setattr(solquest, "normalize_smiles", reject_unstable)
+    path, review = source(tmp_path, ["C1CC1", "C1CCC1"], {"h2o": [-1, -2]})
+    report = prepare_solquest(path, tmp_path / "prepared", review, HoldoutEmbargo.from_smiles([]))
+    assert report["prepared_unique_molecules"] == 1
+    assert report["source_row_indices"] == [0]
+    assert report["rejected_source_rows"] == [
+        {"source_row": 1, "reason": "unstable_canonical_identity"}
+    ]
+
+
 @pytest.mark.parametrize("targets", [{"h2o": [1]}, {"h2o": [[1], [2]]}, {"other": [1, 2]}])
 def test_malformed_or_misnamed_target_columns_refused(tmp_path, targets):
     path, review = source(tmp_path, ["C1CC1", "C1CCC1"], targets)

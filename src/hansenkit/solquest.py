@@ -10,7 +10,7 @@ import numpy as np
 from rdkit import Chem
 
 from .auxiliary import AuxiliaryManifest
-from .chemistry import normalize_smiles
+from .chemistry import UnstableSmilesError, normalize_smiles
 from .data import write_json
 from .embargo import HoldoutEmbargo
 from .provenance import file_hash
@@ -149,6 +149,9 @@ def prepare_solquest(path, output, review: AuxiliaryManifest, embargo: HoldoutEm
     for index, raw in enumerate(smiles):
         try:
             canonical = normalize_smiles(raw)
+        except UnstableSmilesError:
+            rejected[index] = "unstable_canonical_identity"
+            continue
         except (TypeError, ValueError):
             rejected[index] = "invalid_structure"
             continue
