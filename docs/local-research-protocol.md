@@ -103,8 +103,10 @@ metrics. This is an exploratory comparison of all registered candidates, not pos
 of a proven final model. The quantum head adds little beyond intensive chemistry features in
 this run; MoLFormer-only and hybrid results do not establish superiority.
 The GC implementation still needs original-equation and counting validation before it can
-represent the established published method. Paired group uncertainty, OOD/extrapolation
-results and polymer/surfactant validation remain required. These errors must not be described
+represent the established published method. [Related-source and uncertainty review](related-reference-review.md)
+records 792 OOD rows and the failed δP group-bootstrap noninferiority criterion.
+Extrapolation, predictive interval calibration and polymer/surfactant validation remain required.
+These errors must not be described
 as independently verified experimental accuracy or as fulfillment of the complete goal.
 
 ## Remaining work
