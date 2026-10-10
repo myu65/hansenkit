@@ -25,7 +25,7 @@ with the batch. These are source consistency checks, not experimental HSP verifi
 | No source structure available | 33 |
 | Tautomer difference | 1 |
 
-Twenty-five CSV identifiers fail the single-CAS format/check-digit check. This includes
+Twenty-five CSV rows have identifiers that fail the single-CAS format/check-digit check. This includes
 unusable identifiers; do not assume each represents a one-digit typo. The
 [CAS check-digit documentation](https://www.cas.org/training/documentation/chemical-substances/checkdig)
 defines that check. No source row was automatically replaced, neutralized or desalted.

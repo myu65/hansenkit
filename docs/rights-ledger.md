@@ -31,7 +31,7 @@ It does not vendor dependency wheels, external weights, HSP numerical tables or 
 | Supplementary drug solubility table | [Author repository](https://github.com/17314455019/Hansen-solubility-parameters) at `884e8d371f60890ce205cea34e8dc8a94103b469` | Locally inspected only; 10,086 condition rows, 66 distinct drug names; not 10,000 HSP chemicals | Provenance, molecular identities and label quality unresolved; not used for fitting or distribution |
 | OpenMM/RadonPy and force fields | No dependency installed | Future interfaces only | Code, parameter and force-field rights; physical validation: [#7](https://github.com/myu65/hansenkit/issues/7) |
 
-No external predictions supplied training labels or fitted features. Published models were
+No published HSP model predictions supplied training labels or fitted features. Published models were
 run only as local comparison diagnostics; their outputs are not independent truth.
 CI creates only original
 synthetic labels and does not upload datasets or model artifacts. MIT on our code does not relabel
