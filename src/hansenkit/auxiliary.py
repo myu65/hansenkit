@@ -1,4 +1,4 @@
-"""Local quantum auxiliary regression. These labels are never called HSP measurements."""
+"""Local quantum/reference auxiliary regression, separate from HSP measurements."""
 
 from importlib.metadata import version
 from pathlib import Path
@@ -19,7 +19,7 @@ from .splitting import GROUPING_POLICY, grouping_keys
 class AuxiliaryManifest(StrictModel):
     source: str = Field(min_length=1)
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    label_kind: Literal["quantum_computed_auxiliary"]
+    label_kind: Literal["quantum_computed_auxiliary", "published_reference_auxiliary"]
     target_names: tuple[str, ...] = Field(min_length=1)
     target_units: tuple[str, ...] = Field(min_length=1)
     rights_status: Literal["approved", "pending", "denied"]
@@ -28,15 +28,20 @@ class AuxiliaryManifest(StrictModel):
     training_allowed: bool = False
     derived_weights_allowed: bool = False
     redistribution_allowed: bool = False
+    use_scope: Literal["reviewed_local_research", "scientific_private_noncommercial"] = (
+        "reviewed_local_research"
+    )
 
     @model_validator(mode="after")
     def check_targets(self):
         if len(self.target_names) != len(self.target_units):
-            raise ValueError("Every quantum target needs an explicit unit")
+            raise ValueError("Every auxiliary target needs an explicit unit")
         if len(set(self.target_names)) != len(self.target_names):
             raise ValueError("Auxiliary target names must be unique")
         if any(n.casefold() in {"delta_d", "delta_p", "delta_h"} for n in self.target_names):
-            raise ValueError("HSP targets cannot be relabeled as quantum auxiliary targets")
+            raise ValueError("HSP targets cannot be relabeled as auxiliary targets")
+        if self.use_scope == "scientific_private_noncommercial" and self.redistribution_allowed:
+            raise ValueError("Scientific/private noncommercial use cannot authorize redistribution")
         if self.audit_basis == "operator_assumption" and self.redistribution_allowed:
             raise ValueError("Operator assumptions cannot authorize redistribution")
         return self
@@ -45,7 +50,7 @@ class AuxiliaryManifest(StrictModel):
         if self.rights_status != "approved" or not (
             self.training_allowed and self.derived_weights_allowed
         ):
-            raise ValueError("Quantum auxiliary training/derived-weight permissions are required")
+            raise ValueError("Auxiliary training/derived-weight permissions are required")
 
 
 def fit_auxiliary(path, manifest: AuxiliaryManifest, encoder, embargo: HoldoutEmbargo, seed=42):
@@ -77,12 +82,17 @@ def fit_auxiliary(path, manifest: AuxiliaryManifest, encoder, embargo: HoldoutEm
     head = LinearHead.fit(x[train], y[train], alpha=100)
     prediction = head.predict(x[test])
     error = prediction - y[test]
+    quantum = manifest.label_kind == "quantum_computed_auxiliary"
+    task = "quantum_property_auxiliary" if quantum else "reference_descriptor_auxiliary"
+    row_kind = "quantum" if quantum else "reference_descriptor"
     report = {
-        "task": "quantum_property_auxiliary",
+        "task": task,
+        "label_kind": manifest.label_kind,
+        "use_scope": manifest.use_scope,
         "grouping_policy": GROUPING_POLICY,
         "hsp_training_rows": 0,
-        "quantum_training_rows": len(train),
-        "quantum_test_rows": len(test),
+        f"{row_kind}_training_rows": len(train),
+        f"{row_kind}_test_rows": len(test),
         "train_groups": len(set(groups[train])),
         "test_groups": len(set(groups[test])),
         "holdout_embargo": embargo.report(),
@@ -100,7 +110,7 @@ def fit_auxiliary(path, manifest: AuxiliaryManifest, encoder, embargo: HoldoutEm
     }
     state = {
         "schema_version": 1,
-        "task": "quantum_property_auxiliary",
+        "task": task,
         "grouping_policy": GROUPING_POLICY,
         "head": head.state(),
         "encoder": encoder.metadata(),

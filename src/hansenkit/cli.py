@@ -249,7 +249,7 @@ def main(argv=None):
     solquest.add_argument("--reserved-identities", required=True, help="Full HSP/Excel smiles JSON")
     solquest.add_argument("--out", required=True)
     auxiliary = commands.add_parser(
-        "auxiliary-fit", help="Train quantum auxiliary targets with an HSP holdout embargo"
+        "auxiliary-fit", help="Train quantum/reference auxiliary targets with an HSP embargo"
     )
     auxiliary.add_argument("--data", required=True, help="NPZ: smiles, targets, target_names")
     auxiliary.add_argument("--manifest", required=True)
