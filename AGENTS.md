@@ -38,6 +38,10 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   physical backend. Read docs/reference-gc.md; keep coefficient files out of Git and preserve
   hash-bound local-use reviews, complete atom coverage, bounded size and explicit caps.
   Never pass its outputs into training, pseudo-label datasets or the default HSP predictor.
+- `md-cohesion-prepare` retains source MD observables with preparation-only permission.
+  Read docs/md-cohesion.md. Electrostatic and short/long Coulomb terms are not separate
+  delta_p/delta_h labels. Preserve unknown material/end fields; qualify periodic polymer
+  families, conditions and source execution before enabling any fitting or HSP inference.
 
 ## Development
 
