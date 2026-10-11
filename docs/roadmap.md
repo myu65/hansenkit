@@ -13,6 +13,15 @@
 
 ## M1 — Independent experimental small-molecule benchmark
 
+- [757行・746構造・402系列への拡張と直接電子物性のMSE比較](mse-reference-experiment.md)で、
+  変更していない1,013構造の3成分の点MSEが全てHSPiT比較値以下となった。
+  ユーザーが指定した参照MSE目標は達成。53候補の選択は内側系列分割だけで行い、
+  xTB条件を評価後に成分別採用する操作はしない。δDのbootstrap優越、OODのδD、
+  独立実測・市販材料・不確実性校正は未確認で、M1の物理的資格を達成したとは扱わない。
+  次は現データ・分割を固定したデータ量／kernel／proxyの寄与分離、
+  予約両モノマーを避けた非共有結合補助データの資格確認、別系列での外挿検証。
+  [#69](https://github.com/myu65/hansenkit/issues/69)。
+
 - [Physics-feature and squared-target comparison](physics-feature-comparison.md) tests site/charge,
   frozen quantum/reference descriptor coordinates and bounded conformers on the same50 structures.
   Every HSP family is reserved before refitting the auxiliary descriptor model. Six fixed cases
