@@ -46,6 +46,41 @@ def configured_encoder(args):
     )
 
 
+def md_cached_inference(args):
+    from collections import Counter
+
+    from .md_inference import MDCohesionPredictor
+
+    if Path(args.output).exists():
+        raise ValueError("MD inference output exists; choose a fresh output file")
+    predictor = MDCohesionPredictor(args.model, args.review, args.support)
+    records = json.loads(Path(args.input).read_text(encoding="utf-8"))
+    records = records if isinstance(records, list) else [records]
+    if not records:
+        raise ValueError("MD inference input needs at least one material record")
+    reports = [predictor.predict(record, mode=args.mode) for record in records]
+    write_json(
+        args.output,
+        {
+            "task": "computed_md_cohesion_cached_inference",
+            "reports": reports,
+            "hsp_predictions": None,
+            "physical_hsp_backend_qualified": False,
+        },
+    )
+    print(
+        json.dumps(
+            {
+                "output": args.output,
+                "rows": len(reports),
+                "status_counts": dict(Counter(r["status"] for r in reports)),
+                "hsp_predictions": None,
+                "physical_hsp_backend_qualified": False,
+            }
+        )
+    )
+
+
 def fit_and_report(dataset, split, args, mode, head="ridge", encoder=None):
     encoder = encoder or configured_encoder(args)
     model = train_model(
@@ -294,6 +329,15 @@ def main(argv=None):
     cohesion.add_argument("--data", required=True)
     cohesion.add_argument("--review", required=True)
     cohesion.add_argument("--out", required=True)
+    md_infer = commands.add_parser(
+        "md-cohesion-predict", help="Query reviewed source-material MD references; not HSP"
+    )
+    md_infer.add_argument("--model", required=True)
+    md_infer.add_argument("--review", required=True)
+    md_infer.add_argument("--support", required=True)
+    md_infer.add_argument("--input", required=True)
+    md_infer.add_argument("--output", required=True)
+    md_infer.add_argument("--mode", choices=("A", "B", "C"), default="A")
     train = commands.add_parser("train")
     add_training(train)
     train.add_argument("--mode", choices=("A", "B", "C"), default="A")
@@ -412,6 +456,8 @@ def main(argv=None):
                     }
                 )
             )
+        elif args.command == "md-cohesion-predict":
+            md_cached_inference(args)
         elif args.command in {"train", "compare"}:
             dataset = load_dataset(args.data, args.manifest)
             dataset.manifest.authorize("evaluate")

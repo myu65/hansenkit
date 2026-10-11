@@ -110,6 +110,14 @@ and 0 qualified HB300SPX families remain. [PolySol and PolyChar material invento
 retain unknown ports, actual ends, Mn, numeric temperature and original binary-note
 semantics. They supply no HSP3-component training labels or physical backend qualification.
 
+The [cached MD reference inference](md-cohesion-inference.md) requires another
+inference-only review bound to the model, source-material registry, original fitting
+plan/review, source qualification and current reservations. It reuses the original
+feature/vector bytes; it permits no encoder execution, fitting, HSP inference or
+public redistribution. Matching an observed UUID/repeat/DP/Mn/tacticity and source
+protocol is not evidence for a different chain length, end group or commercial grade.
+Its intervals describe the computed source task, not independent material accuracy.
+
 Risk controls: deny-by-default manifests, separate label kinds, ignored local directories,
 no implicit downloads, no private artifacts in CI, review before any public trained-weight release.
 These controls cannot prove the truth of a user's rights declaration or detect a renamed copied dataset.
