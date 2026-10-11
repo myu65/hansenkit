@@ -53,6 +53,10 @@
 - License-reviewed Uni-Mol2, MiniMol or CheMeleon encoder; QM9 auxiliary tasks after rights review.
 - OpenMM/RadonPy backend: units, temperature, force-field coverage, charge treatment, convergence,
   cohesive energy definitions and uncertainty. No GPU jobs in routine CI.
+- [Descriptive MD diagnostics](md-diagnostics.md) now report drift, conditional ESS/block errors
+  and separate replica spread. Local checkpoint continuations preserve unsuccessful stages;
+  convergence, kinetic sampling, cell-size effects and measured density/evaporation validation
+  remain prerequisites to physical/HSP qualification.
 - Active learning only after calibrated uncertainty and independent validation exist.
 
 Do not implement all future backends in M0. Each milestone should advance one reviewable experiment.
