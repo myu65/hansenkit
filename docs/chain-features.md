@@ -16,9 +16,16 @@ Repeat units have two single-bond dummy ports; end caps have one. Distinct isoto
 `[1*]` and `[2*]` specify left-to-right orientation. Unlabeled ports use canonical atom order;
 use isotope labels for asymmetric repeat/end combinations. Atom-map labels are removed by
 SMILES normalization and do not specify persistent port orientation. RDKit `molzip` joins
-the corresponding attachment atoms with valence checks, removes the dummy atoms and
-preserves atom and double-bond stereochemistry. Molecule formula, cap effects and stereo
-are tested against explicit expected structures. No arbitrary attachment site is guessed.
+the corresponding attachment atoms with valence checks and removes the dummy atoms.
+The wrapper retains tetrahedral parity and remaps explicitly supplied double-bond reference
+atoms across the join. It checks the final ordinary isomeric SMILES after serialization:
+neither missing specified bonds nor newly specified bonds may be introduced. Replacing
+a port can change CIP priority and hence an E/Z name while retaining the same atom-reference
+relation. Legitimately degenerate C/N double-bond stereochemistry is removed after joining.
+Partially specified conjugated bonds that cannot round-trip without invented assignments
+are refused. Explicit nonclassical P=N flags are retained as opaque input syntax; this does
+not qualify physical P=N geometry. Molecule formula, cap effects and stereo are tested
+against explicit expected structures. No arbitrary attachment site is guessed.
 
 For a homopolymer, one and two capped repeats determine residue mass and end-mass offset.
 The number-mean repeat count follows from Mn. Unknown ends receive explicitly labeled

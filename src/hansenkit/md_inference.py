@@ -398,14 +398,15 @@ class MDCohesionPredictor:
             ):
                 return self._report(mode, "registered_material_state_mismatch")
             first = assemble_homopolymer(unit, 1, "*C", "*C")
-            second = assemble_homopolymer(unit, 2, "*C", "*C")
             first_mol = Chem.MolFromSmiles(first)
             if first_mol.GetNumHeavyAtoms() > 512 or first != normalize_smiles(
                 str(support["capped_smiles"][row])
             ):
                 return self._report(mode, "source_assembly_mismatch")
             m1 = Descriptors.MolWt(first_mol)
-            residue_mass = Descriptors.MolWt(Chem.MolFromSmiles(second)) - m1
+            # Single-bond attachment ports contribute zero mass; the two-port
+            # graph already has the residue's valence and implicit hydrogen count.
+            residue_mass = Descriptors.MolWt(mol)
             derived_mass = m1 + (request.dp - 1) * residue_mass
             if (
                 residue_mass <= 0

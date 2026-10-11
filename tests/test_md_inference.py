@@ -198,6 +198,50 @@ def test_original_owned_mode_roundtrip_and_provenance(artifacts, mode, expected)
     assert result == predictor(artifacts).predict(artifacts[4], mode)
 
 
+@pytest.mark.parametrize("mode", ["A", "B", "C"])
+def test_valid_source_unit_does_not_need_unrepresentable_dimer(artifacts, monkeypatch, mode):
+    unit = "*C=C/C=C/*"
+    capped = assemble_homopolymer(unit, 1, "*C", "*C")
+    with pytest.raises(ValueError, match="unspecified double bond acquired stereo"):
+        assemble_homopolymer(unit, 2, "*C", "*C")
+    model, support, _, _, record, write = artifacts
+    dp = record["dp"]
+    # Authored polyene formula C(4n+2)H(4n+6), including both methyl caps.
+    table = Chem.GetPeriodicTable()
+    mass = (4 * dp + 2) * table.GetAtomicWeight(6) + (4 * dp + 6) * table.GetAtomicWeight(1)
+    intensive = intensive_features(capped)
+    heavy = Chem.MolFromSmiles(capped).GetNumHeavyAtoms()
+    x = np.r_[
+        intensive.values,
+        intensive.values[: len(COUNT_NAMES)] * heavy,
+        heavy,
+        math.log1p(dp),
+        math.log1p(mass),
+        1 / dp,
+        0.0,
+    ]
+    support["repeat_smiles"] = np.array([unit])
+    support["capped_smiles"] = np.array([capped])
+    support["mn_g_mol"] = np.array([mass])
+    support["features"] = x[None]
+    model["training_feature_min"] = (x - 1).tolist()
+    model["training_feature_max"] = (x + 1).tolist()
+    record.update(repeat_unit_smiles=unit, mn_g_mol=mass)
+    write()
+    calls = []
+
+    def source_assembly(smiles, n, *caps):
+        calls.append(n)
+        return assemble_homopolymer(smiles, n, *caps)
+
+    monkeypatch.setattr("hansenkit.md_inference.assemble_homopolymer", source_assembly)
+    result = predictor(artifacts).predict(record, mode)
+    assert result["status"] == "computed_reference_prediction"
+    assert calls == [1]
+    assert result["hsp_predictions"] is None
+    assert not result["physical_hsp_backend_qualified"]
+
+
 @pytest.mark.parametrize(
     "field,value",
     [
@@ -430,6 +474,27 @@ def test_cli_invalid_artifact_creates_no_output(artifacts, tmp_path):
         main(cli_args(artifacts, input_path, output_path))
     assert error.value.code == 2
     assert not output_path.exists()
+
+
+@pytest.mark.parametrize("as_list", [False, True])
+def test_cli_saved_query_lineage_hashes_exact_bytes_and_orders_rows(
+    artifacts, tmp_path, capsys, as_list
+):
+    record = artifacts[4]
+    content = [record, {**record, "source_uuid": "未確認材料"}] if as_list else record
+    payload = json.dumps(content, ensure_ascii=False, indent=1).encode("utf-8")
+    input_path, output_path = tmp_path / "query.json", tmp_path / "result.json"
+    input_path.write_bytes(payload)
+    main(cli_args(artifacts, input_path, output_path, "B"))
+    report = json.loads(output_path.read_bytes())
+    assert report["input_sha256"] == hashlib.sha256(payload).hexdigest()
+    assert report["mode"] == "B"
+    assert [r["record_index"] for r in report["reports"]] == list(range(2 if as_list else 1))
+    assert report["reports"][0]["status"] == "computed_reference_prediction"
+    if as_list:
+        assert report["reports"][1]["status"] == "refused"
+    stdout = capsys.readouterr().out
+    assert record["source_uuid"] not in stdout and "未確認材料" not in stdout
 
 
 @pytest.mark.parametrize("key", ["feature_version", "descriptor_provenance"])

@@ -1,5 +1,6 @@
 import argparse
 import csv
+import hashlib
 import json
 from dataclasses import asdict
 from pathlib import Path
@@ -54,15 +55,21 @@ def md_cached_inference(args):
     if Path(args.output).exists():
         raise ValueError("MD inference output exists; choose a fresh output file")
     predictor = MDCohesionPredictor(args.model, args.review, args.support)
-    records = json.loads(Path(args.input).read_text(encoding="utf-8"))
+    input_bytes = Path(args.input).read_bytes()
+    records = json.loads(input_bytes)
     records = records if isinstance(records, list) else [records]
     if not records:
         raise ValueError("MD inference input needs at least one material record")
-    reports = [predictor.predict(record, mode=args.mode) for record in records]
+    reports = [
+        {**predictor.predict(record, mode=args.mode), "record_index": index}
+        for index, record in enumerate(records)
+    ]
     write_json(
         args.output,
         {
             "task": "computed_md_cohesion_cached_inference",
+            "input_sha256": hashlib.sha256(input_bytes).hexdigest(),
+            "mode": args.mode,
             "reports": reports,
             "hsp_predictions": None,
             "physical_hsp_backend_qualified": False,
