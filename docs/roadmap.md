@@ -14,6 +14,14 @@
 ## M1 — Independent experimental small-molecule benchmark
 
 - Clear a small neutral-molecule measured dataset and publish its provenance/allowed uses.
+- [Additional primary-source qualification](hsp-source-followup.md) distinguishes material
+  compatibility outcomes and isolated published references from measured molecular HSP.
+  New independent measured training rows remain zero; the exact local reference-head
+  comparison is tracked in [#53](https://github.com/myu65/hansenkit/issues/53).
+- The separately reviewed [18-row / 15-family reference fit](expanded-reference-head.md)
+  uses fresh uniform CPU embeddings and the unchanged 1,013-structure evaluation. All
+  four models fail every component's fixed numerical screen; independent replay agrees.
+  More source-resolved, representative calibration data remain necessary.
 - Pre-register scaffold holdouts, units, temperature handling and calibration; compare A/B/C over seeds.
 - Exact MoLFormer release review and frozen adapter are implemented; evaluate B/C on cleared measurements.
 - Report teacher reproduction separately if an authorized teacher is used. Never replace real accuracy with it.
