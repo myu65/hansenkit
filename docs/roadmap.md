@@ -22,6 +22,8 @@
   uses fresh uniform CPU embeddings and the unchanged 1,013-structure evaluation. All
   four models fail every component's fixed numerical screen; independent replay agrees.
   More source-resolved, representative calibration data remain necessary.
+  The finite follow-up applies the existing train-only selection to those same 18 rows;
+  all 12 component screens fail again. No test-based refit or scope expansion follows.
 - Pre-register scaffold holdouts, units, temperature handling and calibration; compare A/B/C over seeds.
 - Exact MoLFormer release review and frozen adapter are implemented; evaluate B/C on cleared measurements.
 - Report teacher reproduction separately if an authorized teacher is used. Never replace real accuracy with it.
