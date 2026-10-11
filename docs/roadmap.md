@@ -83,8 +83,11 @@
 - [追加材料資料の実際の確認](polymer-scope-extension.md)でPolySol2,088観測と
   PolyChar64観測を準備した。Mn/末端/温度/二端構造が未確定な材料へ数値HSPを出さない。
   新しい隔離MDモデルは分散・電気2項のcomputed-referenceであり、δP/δHは分離しない。
-  次の実装は、source-consistentな明示材料条件・権利review・モデルhashを検証する
-  ローカル計算参照APIと、明示した鎖長／末端系列の検証。通常のHSP拒否を代替成果にしない。
+  [計算参照の推論CLI](md-cohesion-inference.md)は、出典に対応するUUID・構造・DP・Mn・
+  立体規則と両端メチル・計算条件を別のhash-bound reviewで照合する。
+  同じ構造の複数DP観測は0件であり、全体のDP範囲を鎖長依存の検証へ置き換えない。
+  次に必要なのは材料を固定した鎖長／末端／配列の定量的な資料とHSP3成分の資格確認。
+  通常のHSP拒否やMD2項の出力を、未達の高分子HSP目標の代替成果にしない。
 
 - Cleared polymer measurements; repeat units, Mn, dispersity, end groups and EO/PO distribution.
 - Two public experimental studies are inventoried as [28 material/API candidates](public-measurement-candidates.md);

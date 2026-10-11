@@ -13,6 +13,14 @@ from .intensive import COUNT_NAMES, INTENSIVE_VERSION, intensive_features
 from .schema import PolymerInput
 
 MAX_EXPLICIT_UNITS = 256
+_STEREO_UID = "_hansenkit_stereo_uid"
+_DOUBLE_STEREO = {
+    Chem.BondStereo.STEREOE,
+    Chem.BondStereo.STEREOZ,
+    Chem.BondStereo.STEREOCIS,
+    Chem.BondStereo.STEREOTRANS,
+}
+_DOUBLE_DIRECTIONS = {Chem.BondDir.ENDUPRIGHT, Chem.BondDir.ENDDOWNRIGHT}
 
 
 def _fragment(smiles, ports):
@@ -60,13 +68,120 @@ def _port(mol, side):
     return result[0]
 
 
+def _stereo_uid(atom):
+    return atom.GetIntProp(_STEREO_UID)
+
+
+def _check_double_stereo_roundtrip(mol, constraints):
+    mapped = Chem.Mol(mol)
+    for atom in mapped.GetAtoms():
+        atom.SetAtomMapNum(_stereo_uid(atom))
+    params = Chem.SmilesParserParams()
+    params.removeHs = False
+    roundtrip = Chem.MolFromSmiles(Chem.MolToSmiles(mapped, isomericSmiles=True), params)
+    if roundtrip is None:
+        raise ValueError("Assembled stereochemistry cannot be serialized")
+    by_uid = {a.GetAtomMapNum(): a.GetIdx() for a in roundtrip.GetAtoms()}
+    known = set()
+    for ends, refs, stereo in constraints:
+        bond = roundtrip.GetBondBetweenAtoms(*(by_uid[i] for i in ends))
+        if bond is None or bond.GetStereo() not in _DOUBLE_STEREO:
+            raise ValueError("Specified source double-bond stereo was lost")
+        actual_ends = [bond.GetBeginAtom().GetAtomMapNum(), bond.GetEndAtom().GetAtomMapNum()]
+        actual_refs = list(bond.GetStereoAtoms())
+        if actual_ends == list(reversed(ends)):
+            actual_refs.reverse()
+        elif actual_ends != ends:
+            raise ValueError("Source double-bond endpoint mapping changed")
+        flip = False
+        for end, ref, actual in zip(ends, refs, actual_refs, strict=True):
+            if ref != roundtrip.GetAtomWithIdx(actual).GetAtomMapNum():
+                neighbors = roundtrip.GetAtomWithIdx(by_uid[end]).GetNeighbors()
+                if ref not in [a.GetAtomMapNum() for a in neighbors]:
+                    raise ValueError("Source stereo reference is no longer adjacent")
+                flip = not flip
+        actual_same = bond.GetStereo() in (Chem.BondStereo.STEREOZ, Chem.BondStereo.STEREOCIS)
+        expected_same = stereo in (Chem.BondStereo.STEREOZ, Chem.BondStereo.STEREOCIS)
+        if actual_same ^ flip != expected_same:
+            raise ValueError("Source double-bond geometry changed")
+        known.add(frozenset(ends))
+    for bond in roundtrip.GetBonds():
+        ends = frozenset((bond.GetBeginAtom().GetAtomMapNum(), bond.GetEndAtom().GetAtomMapNum()))
+        if bond.GetStereo() in _DOUBLE_STEREO and ends not in known:
+            raise ValueError("An unspecified double bond acquired stereo during assembly")
+
+
 def _join(left, right, left_side="right", right_side="left"):
     left, right = Chem.Mol(left), Chem.Mol(right)
-    _port(left, left_side).SetAtomMapNum(1)
-    _port(right, right_side).SetAtomMapNum(1)
-    # molzip preserves atom stereochemistry while replacing matched attachment ports.
+    for i, atom in enumerate(list(left.GetAtoms()) + list(right.GetAtoms())):
+        atom.SetIntProp(_STEREO_UID, i + 1)
+    constraints = []
+    for mol in (left, right):
+        for bond in mol.GetBonds():
+            if bond.GetStereo() in _DOUBLE_STEREO:
+                constraints.append(
+                    (
+                        [_stereo_uid(bond.GetBeginAtom()), _stereo_uid(bond.GetEndAtom())],
+                        [_stereo_uid(mol.GetAtomWithIdx(i)) for i in bond.GetStereoAtoms()],
+                        bond.GetStereo(),
+                    )
+                )
+    left_port, right_port = _port(left, left_side), _port(right, right_side)
+    replacements = {
+        _stereo_uid(left_port): _stereo_uid(right_port.GetNeighbors()[0]),
+        _stereo_uid(right_port): _stereo_uid(left_port.GetNeighbors()[0]),
+    }
+    left_port.SetAtomMapNum(1)
+    right_port.SetAtomMapNum(1)
+    # molzip preserves tetrahedral neighbor parity. Transfer double-bond geometry
+    # independently so reused SMILES directions cannot conflict at a junction.
+    directional = False
+    for mol in (left, right):
+        for bond in mol.GetBonds():
+            if bond.GetBondDir() in _DOUBLE_DIRECTIONS:
+                bond.SetBondDir(Chem.BondDir.NONE)
+                directional = True
+            if bond.GetBondType() == Chem.BondType.DOUBLE:
+                bond.SetStereo(Chem.BondStereo.STEREONONE)
     output = Chem.molzip(left, right)
     Chem.SanitizeMol(output)
+    if not constraints and not directional:
+        if any(a.GetChiralTag() != Chem.ChiralType.CHI_UNSPECIFIED for a in output.GetAtoms()):
+            # A cap can also make a tetrahedral center non-stereogenic.
+            Chem.AssignStereochemistry(output, cleanIt=True, force=True)
+        return output
+    output.ClearComputedProps()
+    Chem.SanitizeMol(output)
+    Chem.AssignStereochemistry(output, cleanIt=True, force=True)
+    by_uid = {_stereo_uid(a): a.GetIdx() for a in output.GetAtoms()}
+    potential = {
+        info.centeredOn
+        for info in Chem.FindPotentialStereo(output, cleanIt=False)
+        if info.type == Chem.StereoType.Bond_Double
+    }
+    kept = []
+    for ends, original_refs, stereo in constraints:
+        refs = [replacements.get(i, i) for i in original_refs]
+        bond = output.GetBondBetweenAtoms(*(by_uid[i] for i in ends))
+        if bond is None:
+            raise ValueError("A source double bond was removed during assembly")
+        classic_sp2 = {bond.GetBeginAtom().GetAtomicNum(), bond.GetEndAtom().GetAtomicNum()} <= {
+            6,
+            7,
+        }
+        if classic_sp2 and bond.GetIdx() not in potential:
+            # A methyl/H cap can make the substituents identical.
+            continue
+        # Other explicitly supplied flags (e.g. hypervalent P=N) retain source
+        # encoding only; the potential-stereo classifier cannot qualify them.
+        write_refs = refs
+        if _stereo_uid(bond.GetBeginAtom()) != ends[0]:
+            write_refs = list(reversed(refs))
+        bond.SetStereoAtoms(*(by_uid[i] for i in write_refs))
+        bond.SetStereo(stereo)
+        kept.append((ends, refs, stereo))
+    Chem.SetDoubleBondNeighborDirections(output)
+    _check_double_stereo_roundtrip(output, kept)
     return output
 
 
@@ -83,8 +198,24 @@ def assemble_sequence(repeat_units, left_cap=None, right_cap=None):
     chain = _join(chain, _fragment("*[H]" if right_cap is None else right_cap, 1), "right", "cap")
     if any(a.GetAtomicNum() == 0 for a in chain.GetAtoms()) or len(Chem.GetMolFrags(chain)) != 1:
         raise ValueError("Assembly left an unconnected fragment or port")
+    expected = Chem.RemoveHs(chain)
     Chem.AssignStereochemistry(chain, cleanIt=True, force=True)
-    return normalize_smiles(Chem.MolToSmiles(chain, isomericSmiles=True))
+    smiles = normalize_smiles(Chem.MolToSmiles(chain, isomericSmiles=True))
+    actual = Chem.MolFromSmiles(smiles)
+    expected_count = sum(b.GetStereo() in _DOUBLE_STEREO for b in expected.GetBonds())
+    actual_count = sum(b.GetStereo() in _DOUBLE_STEREO for b in actual.GetBonds())
+    has_stereo = expected_count or any(
+        a.GetChiralTag() != Chem.ChiralType.CHI_UNSPECIFIED for a in expected.GetAtoms()
+    )
+    if expected_count != actual_count or (
+        has_stereo
+        and (
+            not actual.HasSubstructMatch(expected, useChirality=True)
+            or not expected.HasSubstructMatch(actual, useChirality=True)
+        )
+    ):
+        raise ValueError("Final canonical assembly changed source stereochemistry")
+    return smiles
 
 
 def assemble_homopolymer(repeat_unit, n, left_cap=None, right_cap=None):
