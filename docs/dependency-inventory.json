@@ -634,6 +634,26 @@
       "review_status": "publisher-declarations-recorded; binary redistribution not reviewed"
     },
     {
+      "name": "OpenMM",
+      "version": "8.6.1",
+      "license_expression": null,
+      "license_classifiers": [],
+      "license_field_first_line": [
+        "Python Software Foundation License (BSD-like)"
+      ],
+      "project_urls": [],
+      "license_files": [],
+      "publisher_notice": {
+        "url": "https://github.com/openmm/openmm/blob/b399af4725573963b46d6c1083fdcf7a37615857/docs-source/licenses/Licenses.txt",
+        "sha256": "437b7168cc997abea3b5f2a9e0fb6894f96de77b9c69be428ccfcfe9bed58293",
+        "API_CPU_Reference": "MIT",
+        "CUDA_OpenCL": "LGPL",
+        "bundled_component_notices": "separate; full publisher notice retained locally"
+      },
+      "reviewed_windows_cp312_wheel_sha256": "81d2db56d6cfc9d7ade0adc0039020cb995d3606915087fab3563499981e739a",
+      "review_status": "optional CPU/Reference execution reviewed; binaries not vendored; no installed wheel license files detected, publisher notice retained separately"
+    },
+    {
       "name": "packaging",
       "version": "26.3",
       "license_expression": "Apache-2.0 OR BSD-2-Clause",
@@ -1714,5 +1734,22 @@
       ],
       "review_status": "publisher-declarations-recorded; binary redistribution not reviewed"
     }
-  ]
+  ],
+  "physics_review_date": "2026-10-11",
+  "optional_physics_scope": "OpenMM 8.6.1 explicit CPU/Reference; no force-field, dataset, binary or GPU rights inferred",
+  "separate_local_parameterization_runtime": {
+    "repository_dependency": false,
+    "public_redistribution_allowed_by_this_review": false,
+    "audit_basis": "operator_assumption",
+    "AmberTools": "25.3 cuda_None_nompi_py312hd652fd9_100",
+    "AmberTools_package_sha256": "059b6106762a4d4d33005057651fbfd7c65724e44a018121cb256338e2906616",
+    "AmberTools_package_declared_license": "GPL-3.0-or-later AND LGPL-3.0-or-later AND BSD-3-Clause AND MIT",
+    "Packmol": "21.0.1; MIT",
+    "micromamba": "2.9.0; BSD-3-Clause",
+    "force_field": "GAFF2 2.2.20; numerical parameter rights separate; local review only",
+    "charge_method": "AM1-BCC with explicit neutral-charge normalization; local evaluation only",
+    "archive_count_sha256_verified": 138,
+    "non_OSS_dependency": "Intel MKL, separate publisher license",
+    "detail": "docs/openmm-cohesion-observer.md"
+  }
 }

@@ -52,6 +52,9 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
   review and remain computed-reference artifacts, never independent HSP measurements.
 - Charge classification recognizes only explicit neutral covalent nitro/nitrate motifs.
   It never neutralizes a graph, qualifies a zwitterion by net zero, or expands HSP scope.
+- The opt-in OpenMM frame observer returns signed nonbonded cohesion, never HSP components.
+  Read docs/openmm-cohesion-observer.md. Keep parameter assets local, CPU/Reference explicit,
+  original exceptions and closure diagnostics; finite arithmetic does not qualify equilibrium.
 
 ## Development
 

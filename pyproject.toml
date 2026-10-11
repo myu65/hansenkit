@@ -20,6 +20,7 @@ dependencies = [
 lightgbm = ["lightgbm>=4.6,<5"]
 molformer = ["torch>=2.6,<3", "transformers==5.12.1"]
 solvation-data = ["ijson==3.5.1"]
+physics = ["openmm==8.6.1"]
 
 [[tool.uv.index]]
 name = "pytorch-cpu"
