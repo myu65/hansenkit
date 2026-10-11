@@ -108,3 +108,134 @@ def fit_group_selected_ridge(x, y, groups, *, alphas=DEFAULT_ALPHAS, folds=5, se
         "calibrated_intervals": False,
     }
     return head, report
+
+
+def _hybrid_fold_candidates(x, embedding, y, groups, train, validation, base, candidates):
+    """Rebuild residual targets inside an outer training partition."""
+    if set(groups[train]) & set(groups[validation]):
+        raise ValueError("Outer hybrid family leakage")
+    head, selection = base(train)
+    prediction = head.predict(x[validation])
+    inner_oof = np.full_like(y[train], np.nan)
+    inner_records = []
+    splitter = GroupKFold(n_splits=min(4, len(set(groups[train]))), shuffle=True, random_state=42)
+    for local_train, local_validation in splitter.split(x[train], groups=groups[train]):
+        ids, held = train[local_train], train[local_validation]
+        if set(groups[ids]) & (set(groups[held]) | set(groups[validation])):
+            raise ValueError("Hybrid residual family leakage")
+        inner_head, _ = base(ids)
+        inner_oof[local_validation] = inner_head.predict(x[held])
+        inner_records.append({"train_indices": ids.tolist(), "validation_indices": held.tolist()})
+    if not np.isfinite(inner_oof).all():
+        raise ValueError("Incomplete inner residual predictions")
+    residual_y = y[train] - inner_oof
+    outputs = [prediction, prediction + residual_y.mean(axis=0)]
+    outputs.extend(
+        prediction
+        + LinearHead.fit(embedding[train], residual_y, alpha).predict(embedding[validation])
+        for alpha in candidates[2:]
+    )
+    return (
+        np.array(outputs),
+        prediction,
+        {
+            "train_indices": train.tolist(),
+            "validation_indices": validation.tolist(),
+            "inner_residual_folds": inner_records,
+            "base_selection": selection,
+        },
+    )
+
+
+def fit_group_selected_hybrid(x, embedding, y, groups, *, alphas=DEFAULT_ALPHAS, seed=42):
+    """Fit chemical base plus embedding residual using supplied training families.
+
+    Five outer family folds select residual strength; four inner family folds
+    reconstruct its targets. Each base selects its penalty using only its own
+    training subset. Caller owns rights, chemistry and external reservations.
+    Returns two LinearHeads with JSON states and a training selection report.
+    No independent accuracy, calibration or applicability claim is conferred.
+    """
+    try:
+        x, embedding, y = (np.asarray(a, dtype=float) for a in (x, embedding, y))
+    except (TypeError, ValueError):
+        raise ValueError("Hybrid inputs must be finite aligned matrices") from None
+    groups = np.asarray(groups)
+    if (
+        x.ndim != 2
+        or embedding.ndim != 2
+        or y.ndim != 2
+        or len(x) != len(embedding)
+        or len(x) != len(y)
+        or not embedding.shape[1]
+        or not np.isfinite(embedding).all()
+        or groups.ndim != 1
+        or len(groups) != len(x)
+    ):
+        raise ValueError("Hybrid inputs must be finite aligned matrices")
+    if len(set(groups)) < 5:
+        raise ValueError("Nested hybrid selection needs at least five training families")
+    # Existing validation also checks features, targets, family keys and penalties.
+    base_head, base_report = fit_group_selected_ridge(x, y, groups, alphas=alphas, seed=seed)
+    candidates = ("none", "constant", *base_report["candidates"][1:])
+    cache = {tuple(range(len(x))): (base_head, base_report)}
+
+    def base(ids):
+        key = tuple(int(i) for i in ids)
+        if key not in cache:
+            cache[key] = fit_group_selected_ridge(
+                x[list(key)], y[list(key)], groups[list(key)], alphas=alphas, seed=seed
+            )
+        return cache[key]
+
+    oof = np.full((len(candidates), *y.shape), np.nan)
+    base_oof = np.full_like(y, np.nan)
+    records = []
+    splitter = GroupKFold(n_splits=5, shuffle=True, random_state=seed)
+    for train, validation in splitter.split(x, groups=groups):
+        candidate_predictions, prediction, record = _hybrid_fold_candidates(
+            x, embedding, y, groups, train, validation, base, candidates
+        )
+        oof[:, validation], base_oof[validation] = candidate_predictions, prediction
+        records.append(record)
+    if not np.isfinite(oof).all() or not np.isfinite(base_oof).all():
+        raise ValueError("Incomplete outer hybrid predictions")
+    errors = np.abs(oof - y)
+    scores = np.mean([errors[:, groups == key].mean(axis=1) for key in sorted(set(groups))], axis=0)
+    choices = [int(np.flatnonzero(s <= s.min() + 1e-12)[0]) for s in scores.T]
+    residual_y = y - base_oof
+    residual = LinearHead.fit(embedding, residual_y, 1.0)
+    fitted = {}
+    for target, choice in enumerate(choices):
+        candidate = candidates[choice]
+        if candidate in ("none", "constant"):
+            residual.coef[target] = 0
+            residual.intercept[target] = (
+                0.0 if candidate == "none" else residual_y[:, target].mean()
+            )
+        else:
+            if candidate not in fitted:
+                fitted[candidate] = LinearHead.fit(embedding, residual_y, candidate)
+            residual.coef[target] = fitted[candidate].coef[target]
+            residual.intercept[target] = fitted[candidate].intercept[target]
+    report = {
+        "selection_scope": "supplied_training_rows_only",
+        "training_rows": len(x),
+        "training_families": len(set(groups)),
+        "base_selection": base_report,
+        "residual_candidates": list(candidates),
+        "candidate_scores": scores.tolist(),
+        "selected_candidates": [candidates[i] for i in choices],
+        "outer_folds": records,
+        "inner_folds_seed": 42,
+        "outer_folds_seed": seed,
+        "base_subset_selections": [
+            {"train_indices": list(ids), "selection": selection}
+            for ids, (_, selection) in sorted(cache.items())
+        ],
+        "tie_rule": "within 1e-12 prefer no residual, then constant, then larger alpha",
+        "criterion": "family_macro_validation_mae_per_target",
+        "independent_accuracy_validated": False,
+        "calibrated_intervals": False,
+    }
+    return base_head, residual, report
