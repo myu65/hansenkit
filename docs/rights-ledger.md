@@ -55,6 +55,17 @@ It does not vendor dependency wheels, external weights, HSP numerical tables or 
 | hsp_embedding reference CSV and 181-compound article population | [2024 source](https://github.com/jiayunpang/hsp_embedding/tree/87dff43937ad4c959457637622d662cb52b003eb), no repository license detected; [2026 article](https://doi.org/10.1038/s41598-026-58509-8), CC BY-NC-ND 4.0 article | Local source/overlap inventory only; unreleased 181-row data not obtained, author request prepared but unsent | Article permission does not clear unreleased/inherited data; measurement provenance, family isolation and local-use terms unresolved; no fitting or redistribution from these candidates |
 | 2026 green-solvent lists and Wolfram 211-solvent compilation | [Green guide](https://doi.org/10.1039/d6su00271d), [Wolfram source metadata](https://datarepository.wolframcloud.com/resources/JoshuaSchrier_Hansen-Solubility-Parameters) | Source inventory only; existing table lineage, not new measured labels | Asset-specific table rights, identifiers, overlap and measurement lineage; no numerical tables or teacher outputs included |
 
+The fixed [NIST ThermoML auxiliary source](thermoml-auxiliary-review.md), snapshot
+2020-09-30, matches the publisher archive SHA-256 and declares
+[NIST terms](https://www.nist.gov/open/license), including distinct SRD and other-work
+provisions. It is not declared MIT/CC0. Local read-only inventory and exact-source
+qualification retain 248 density points in 21 graphs/16 isolated families and
+five unpaired calorimetric vaporization candidates with unknown pressure.
+Original preparation permissions remain off; a separate exact scoped local review
+permits the 16-family density pilot and private fold-model states only.
+Primary table/state/uncertainty and redistribution rights
+remain unresolved. No source records, fitted weights or HSP labels are included.
+
 The [MD response-transfer experiment](md-response-transfer.md) has a separate local
 operator-assumption review for the immutable computed-cohesion heads' two centered
 structural responses. They are learned auxiliary coordinates, not absolute HSP

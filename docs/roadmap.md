@@ -43,6 +43,11 @@
   computed-cohesion heads without guessing chain conditions. Three fixed response augmentations
   fail all-three noninferiority on the same 1,013 reference structures and worsen dispersion;
   source-domain calibration and independently measured molecular HSP remain necessary.
+- [Measured-property auxiliary inventory](thermoml-auxiliary-review.md) verifies the fixed
+  NIST archive and retains 248 density points in 21 graphs/16 isolated families
+  as archived-measurement candidates. A separately reviewed 16-family density pilot
+  compares A/B/C and distinct point/graph/family weighting. Primary table/state qualification
+  remains; density/Hvap counts are not HSP truth counts. Tracked in [#55](https://github.com/myu65/hansenkit/issues/55).
 
 ## M2 — Polymers and long-chain surfactants
 
