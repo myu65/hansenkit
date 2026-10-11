@@ -1,5 +1,10 @@
 # Solvent-interaction auxiliary data
 
+The fit counts/results below describe the historical reservation. After the HSP cohort
+expanded to 757, [reaudit](expanded-hsp-auxiliary-audit.md) found training-family conflicts.
+[New isolated GDB17/EGP A/B/C fits](expanded-hsp-auxiliary-refit.md) replace those heads
+for current HSP transfer; old source, permissions and reports remain unchanged.
+
 The [SolQuest primary manuscript](https://arxiv.org/html/2411.00994v1) and
 [Zenodo release](https://zenodo.org/records/13952172) provide COSMO-RS solvation free
 energies in 39 named solvents at 300 K. Release metadata declares CC BY 4.0. These

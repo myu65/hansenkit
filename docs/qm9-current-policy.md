@@ -1,5 +1,10 @@
 # Current-policy QM9 audit and refit
 
+This is the historical 61,622-row fit before the HSP cohort expanded to 757.
+The [expanded-reservation audit](expanded-hsp-auxiliary-audit.md) found 7,469 conflicting
+training rows; the [new 53,670-row refit and HSP transfer](expanded-hsp-auxiliary-refit.md)
+supersede its qualification for current-cohort transfer. Historical files/results stay unchanged.
+
 The original characterized QM9 population contains 88,599 rows. Its original
 normalization and canonical-then-strict-Murcko union order were reconstructed,
 yielding exactly 69,142 train / 19,457 test rows and 12,478 / 3,120 groups. Reloading

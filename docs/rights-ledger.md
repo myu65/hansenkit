@@ -91,6 +91,25 @@ CI creates only original
 synthetic labels and does not upload datasets or model artifacts. MIT on our code does not relabel
 any external software, weight, table, or dataset as MIT.
 
+The [expanded HSP reservation audit](expanded-hsp-auxiliary-audit.md) supersedes the
+former auxiliary models' isolation for the current 757 HSP rows. Separate exact local
+reviews authorize [new QM9/SolQuest/Abraham/PolyOmics fits and QM9 transfer](expanded-hsp-auxiliary-refit.md)
+only under scientific/private/noncommercial operator assumption. All 5,176 current
+aliases are reserved against auxiliary fitting; the old 2,798 aliases, legacy Murcko,
+complete actual-graph tautomer aliases and periodic-family links remain intact.
+Every old source, preparation permission and fitted artifact stays unchanged.
+Source/reference-model conditions and licenses are not relabeled MIT, and no source
+arrays, parameters, trajectories or model states are redistributed. Source article
+licenses do not clear upstream commercial database/force-field use.
+
+The separately reviewed [DES15K/HB300SPX intake](dimer-auxiliary-intake.md) records
+Figshare CSV CC0 versus the secondary Zenodo ZIP/embedded-license distinctions,
+actual versus SNS surrogate columns, source SAPT explanatory formula inconsistency,
+and both-monomer isolation. No dimer fit was permitted or performed: only 1 DES family
+and 0 qualified HB300SPX families remain. [PolySol and PolyChar material inventories](polymer-scope-extension.md)
+retain unknown ports, actual ends, Mn, numeric temperature and original binary-note
+semantics. They supply no HSP3-component training labels or physical backend qualification.
+
 Risk controls: deny-by-default manifests, separate label kinds, ignored local directories,
 no implicit downloads, no private artifacts in CI, review before any public trained-weight release.
 These controls cannot prove the truth of a user's rights declaration or detect a renamed copied dataset.

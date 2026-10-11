@@ -13,6 +13,14 @@
 
 ## M1 — Independent experimental small-molecule benchmark
 
+- [拡張した全HSP予約による補助モデルの再監査・再学習](expanded-hsp-auxiliary-refit.md)で、
+  QM9 53,670構造、GDB17 95,787構造、EGP 1,075構造、Abraham 222構造、
+  PolyOmics 15,940計算行をそれぞれ別の教師種・レビュー・系列分割で学習した。
+  全旧学習衝突を再fitで修復し、全5資料の独立再計算が一致。
+  新しいQM9転移を学習内でδD/Hへ採用し、1,013参照構造の主MSEは
+  1.472484／11.133871／7.219472。HSP教師は757参照行のままで、実測や高分子の資格は未達。
+  [#71](https://github.com/myu65/hansenkit/issues/71)。
+
 - [757行・746構造・402系列への拡張と直接電子物性のMSE比較](mse-reference-experiment.md)で、
   変更していない1,013構造の3成分の点MSEが全てHSPiT比較値以下となった。
   ユーザーが指定した参照MSE目標は達成。53候補の選択は内側系列分割だけで行い、
@@ -71,6 +79,12 @@
   remains; density/Hvap counts are not HSP truth counts. Tracked in [#55](https://github.com/myu65/hansenkit/issues/55).
 
 ## M2 — Polymers and long-chain surfactants
+
+- [追加材料資料の実際の確認](polymer-scope-extension.md)でPolySol2,088観測と
+  PolyChar64観測を準備した。Mn/末端/温度/二端構造が未確定な材料へ数値HSPを出さない。
+  新しい隔離MDモデルは分散・電気2項のcomputed-referenceであり、δP/δHは分離しない。
+  次の実装は、source-consistentな明示材料条件・権利review・モデルhashを検証する
+  ローカル計算参照APIと、明示した鎖長／末端系列の検証。通常のHSP拒否を代替成果にしない。
 
 - Cleared polymer measurements; repeat units, Mn, dispersity, end groups and EO/PO distribution.
 - Two public experimental studies are inventoried as [28 material/API candidates](public-measurement-candidates.md);
