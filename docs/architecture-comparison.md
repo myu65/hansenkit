@@ -97,3 +97,6 @@ ExtraTreesが0/0件、MLPが51/10件でした。予測値の切り上げはし�
 計画SHA-256: `d06cc404893eafbd85a4679fe0c6b81ab70738026bd9d236b80612ed0dffd7cb`。
 予測レシート: `820f73f88b49e522a40b29de15a0ee34dc2fd266eb876386b9ecfb84be260f4b`。
 対応Issue: [#65](https://github.com/myu65/hansenkit/issues/65)。
+
+同じHSP集団を使った後続の[水素結合・部分電荷・3D特徴と二乗回帰](physics-feature-comparison.md)
+も、別計画で学習・照合しました。追加特徴の寄与と非負性の仮説を区別して報告しています。
