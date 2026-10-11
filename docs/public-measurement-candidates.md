@@ -138,6 +138,11 @@ permission-off inventory and make no HSP accuracy claim.
 
 ## Next experiment
 
+The [2026-10-11 source follow-up](hsp-source-followup.md) checks newer polymer/surfactant
+observations and older pharmaceutical references against the full legacy reservation.
+It finds no newly qualified independent measured molecular HSP training rows; solvent
+coordinates, binary compatibility observations and computed values remain separate.
+
 For [polymer validation #5](https://github.com/myu65/hansenkit/issues/5), first review
 supporting-information solvent scores, test conditions and material specifications
 from the two experimental papers. Freeze whole polymer/comonomer and commercial
