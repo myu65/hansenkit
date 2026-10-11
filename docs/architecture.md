@@ -55,7 +55,12 @@ transformers dependency. See [the pinned audit](molformer-review.md).
 Vector extraction, fit-on-training-only transformations of vectors and audit of any training data
 used by a user-supplied encoder are the operator's responsibility.
 
-`PhysicsBackend.simulate/provenance` is a future interface only. Local QM9 auxiliary regression
+`PhysicsBackend.simulate/provenance` is a future interface only. The optional
+[OpenMM frame observer](openmm-cohesion-observer.md) accepts a reviewed caller-parameterized
+neutral molecular cell and returns signed LJ/Coulomb nonbonded cohesion on explicit CPU/Reference.
+It never integrates dynamics or returns HSP components. An evaluation-only local pilot ran
+three defined species; equilibrium and physical HSP applicability remain unqualified.
+Local QM9 auxiliary regression
 is implemented separately from HSP labels. [SolQuest preparation](solvation-auxiliary.md) adds
 an optional streaming contract for computed interaction targets; its exported data still needs
 fitting clearance. Alternative encoders, GPU MD and active learning remain roadmap work.

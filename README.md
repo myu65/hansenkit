@@ -53,6 +53,10 @@ Mnなどの追加でMAEは小さくなりましたが、強い3系列の分割�
 5記述子を学習しました。推定特徴の追加でδD MAEは1.435→1.300へ下がりましたが、全3成分の非劣性は未達です。
 研究・私用限定の条件を保持し、参照記述子をHSPや量子物性の学習件数へ足しません。
 
+[OpenMMのCPU凝集エネルギー観測器](docs/openmm-cohesion-observer.md)を追加しました。
+エタノール・PEG8・指定したEO/PO鎖で各2 psのMDと保存座標の独立照合を実行しました。
+平衡化前の動作確認で、HSP3成分の推算・実測精度・市販高分子の適用資格は未確認です。
+
 | 方式 | 初期PoC |
 | --- | --- |
 | A | 官能基＋記述子＋Ridge回帰。LightGBMは追加オプション |
@@ -104,7 +108,7 @@ HSPiTのExcelの分類と、評価用の分子・骨格を学習から除外し�
 
 高分子・EO/PO分布・末端基・Mnのスキーマを用意しましたが、高分子・長鎖EO/PO活性剤・
 イオン性分子・混合物への推算はまだ拒否します。Uni-Mol2、MiniMol、CheMeleon、QM9、
-OpenMM/RadonPy、GPU-MD、能動学習は今後の接続候補です。
+RadonPy、GPU-MD、能動学習は今後の接続候補です。OpenMMはCPU観測器のみ追加しています。
 
 開発方針は [AGENTS.md](AGENTS.md)、[Codexで続ける手順](docs/codex.md)、
 [ロードマップ](docs/roadmap.md)、[実験条件と合成データの結果](docs/evaluation.md)、
