@@ -71,5 +71,8 @@
   convergence, kinetic sampling, cell-size effects and measured density/evaporation validation
   remain prerequisites to physical/HSP qualification.
 - Active learning only after calibrated uncertainty and independent validation exist.
+- [Array-only dipole diagnostics](dipole-diagnostics.md) report population covariance,
+  mean-volume fixed-charge response and whole/block/half correlation diagnostics;
+  source, ensemble, polarization, finite-size and physical qualifications remain caller tasks.
 
 Do not implement all future backends in M0. Each milestone should advance one reviewable experiment.
