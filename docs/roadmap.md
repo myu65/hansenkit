@@ -13,6 +13,16 @@
 
 ## M1 — Independent experimental small-molecule benchmark
 
+- [Physics-feature and squared-target comparison](physics-feature-comparison.md) tests site/charge,
+  frozen quantum/reference descriptor coordinates and bounded conformers on the same50 structures.
+  Every HSP family is reserved before refitting the auxiliary descriptor model. Six fixed cases
+  use nested training-family selection before the exposed1013-reference comparison; no physical
+  backend, measured-data clearance or material inference follows from these calculations.
+  Site/charge augmentation lowers H-bond reference MAE and the positive direct forest
+  lowers dispersion MAE; squared targets worsen all components. All-three fixed
+  noninferiority remains unmet. Independent native replay agrees.
+  Tracked in [#67](https://github.com/myu65/hansenkit/issues/67).
+
 - Clear a small neutral-molecule measured dataset and publish its provenance/allowed uses.
 - [Additional primary-source qualification](hsp-source-followup.md) distinguishes material
   compatibility outcomes and isolated published references from measured molecular HSP.
