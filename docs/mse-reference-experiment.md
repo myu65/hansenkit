@@ -164,6 +164,14 @@ Intel/static依存、数表の上流権利と商用再配布まで確認した�
 全26,265原ファイル、299runtime asset、exact commandと暗黙入力なしの監査も通過しました。
 この照合はHSP数値を読まず、外部計算や学習を実行していません。
 
+モデルの独立検証では、プロジェクトの学習・推算・評価関数を使わず、全53候補、
+外側5×内側5分割と最終の内側5分割、系列ごとのスコア・設定選択を再構成しました。
+内側候補スコアの最大差9.148e-14、nested MSEの差4.041e-14、nested予測1.197e-12、
+全1,770行の予測2.554e-12、JSON予測6.395e-14、指標／bootstrap4.245e-13でした。
+分割・成分別選択・全判定・OOD判定・負予測件数は一致しています。
+独立実装側でも自身の予測を固定してから外部HSP数値を読み、モデル選択へ戻しませんでした。
+参照点MSEの3成分達成を再確認し、実測／物理資格・校正・再配布の許可はFalseを維持しています。
+
 | ローカル固定成果物 | SHA-256 |
 | --- | --- |
 | 特徴計画 | `f55e955b1adecea7a064d4a3406b35bbfffa5f4753ffe6ea18bc6d0338c9601e` |
@@ -180,6 +188,9 @@ Intel/static依存、数表の上流権利と商用再配布まで確認した�
 | 全予測配列 | `b125f8e1b393b1bb06e64caff6da2ab06cc3c9314cdab8e9215242cd16d6e88a` |
 | 予測固定レシート | `3cc3e38b12afd7b61ff5bcfdd6918023506bf4c1e4624c28b31e15f010904d1b` |
 | 評価レポート | `33d8a2a6e213e11ffe3f457dfd6bc9f97078bcca0b7e6e6ebd4ca4dc258dcb48` |
+| 独立モデル再計算スクリプト | `e26fb2be7937edcd17e7862f0e99a212df286474c77f34ef17fa43e4d997ea78` |
+| 独立モデルの予測固定レシート | `75cc48c5a7b906c6c3077b9c2376c5f12502a17aa6c4b56de8a1e99c366db48a` |
+| 独立モデル・評価照合 | `536c7b18e73c2bdbef8c7a2905c2d9d43160e4ecb0b85f539d28ce6c14489f20` |
 
 ローカルの再現実行は`local/mse-computational-v1/run_mse_experiment.py`に保存しています。
 `prepare`、正確な計画／レビューhashを指定した`fit-predict`、予測固定レシートhashも
@@ -189,4 +200,26 @@ Intel/static依存、数表の上流権利と商用再配布まで確認した�
 
 Ruff、format、380テスト、合成CLIの生成→4方式学習→CSV推算、wheel／sdist buildが通過しました。
 CIのfixtureは独自の合成値のみで、xTB binary・checkpoint・数表・量子出力を取得しません。
-追跡は[#69](https://github.com/myu65/hansenkit/issues/69)です。
+追跡は[#69](https://github.com/myu65/hansenkit/issues/69)、公開変更は
+[PR #70](https://github.com/myu65/hansenkit/pull/70)です。
+
+## 次の固定実験候補
+
+今回の参照点MSEの目標は達成したので、次に評価を見て候補を無制限に足すのではなく、
+現757行／同じ系列予約を固定したデータ量・加算kernel・3D proxyの寄与分離を行います。
+別系列の参照評価、OODのδD、未修正の負予測、校正データの代表性も別の課題です。
+
+水素結合相互作用の補助データでは、[DES15Kの著者配布](https://doi.org/10.6084/m9.figshare.12692717.v1)
+の13,139,993 bytesのCSVを最初の構造監査候補とします。配布元はこの資産にCC0を宣言し、
+配布元メタデータのMD5は`d6c564d0b4ceda7f809ed737853866cf`です。
+次に[著者のNCIAtlas](https://github.com/Honza-R/NCIAtlas/tree/1816bfc72609d7deb1d4f93ab9e27eb13bb44bec)
+のHB300SPX×10を候補とします。データREADMEのCC BY 4.0と、距離系列・原子選択・
+両モノマーの同一性を採用前に照合します。今回どちらの数値配列も取得・学習していません。
+DES5M等のsurrogate予測を、実行済み量子計算ラベルへ混ぜません。
+
+将来の補助学習では、旧2,798別名に今回全757行の系列・完全な別名閉包も加え、
+過去の補助fitを再監査します。二量体／clusterは結合したgraphだけでなく全モノマーを
+予約と照合します。waterや単純なprobeが予約済みなら、そのpairの補助学習を拒否します。
+衝突があったモデルは再学習し、評価行だけを外して修復しません。
+分極率・相互作用・溶媒和・密度・蒸発熱を増やしても、HSP教師化合物数へ加えません。
+新しい数値取得、execution、fittingはそれぞれ別の正確な資産／計画レビューを要します。
