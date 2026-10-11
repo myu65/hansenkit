@@ -55,6 +55,11 @@ Read README.md and docs/data-policy.md before changing data ingestion or model t
 - The opt-in OpenMM frame observer returns signed nonbonded cohesion, never HSP components.
   Read docs/openmm-cohesion-observer.md. Keep parameter assets local, CPU/Reference explicit,
   original exceptions and closure diagnostics; finite arithmetic does not qualify equilibrium.
+- MD time-series summaries are descriptive. Read docs/md-diagnostics.md; preserve complete
+  traces and independent replicates, conditional ESS/error assumptions and unresolved constant
+  series. Freeze continuation plans before collecting more data; never choose burn-in, weaken
+  gates or alter force-field parameters using held-out HSP values. Passing diagnostics does not
+  qualify equilibrium, HSP decomposition, material applicability or physical accuracy.
 
 ## Development
 

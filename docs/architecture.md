@@ -60,6 +60,9 @@ used by a user-supplied encoder are the operator's responsibility.
 neutral molecular cell and returns signed LJ/Coulomb nonbonded cohesion on explicit CPU/Reference.
 It never integrates dynamics or returns HSP components. An evaluation-only local pilot ran
 three defined species; equilibrium and physical HSP applicability remain unqualified.
+The NumPy-only [MD diagnostics](md-diagnostics.md) analyze uniform traces and separate
+replicates without selecting burn-in or promoting finite observations into qualified properties.
+Conditional autocorrelation/block errors and unresolved constant traces remain explicit.
 Local QM9 auxiliary regression
 is implemented separately from HSP labels. [SolQuest preparation](solvation-auxiliary.md) adds
 an optional streaming contract for computed interaction targets; its exported data still needs
