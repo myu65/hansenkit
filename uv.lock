@@ -126,6 +126,8 @@ dependencies = [
     { name = "pydantic" },
     { name = "rdkit" },
     { name = "scikit-learn" },
+    { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
 
 [package.optional-dependencies]
@@ -160,6 +162,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.10,<3" },
     { name = "rdkit", specifier = ">=2024.9,<2027" },
     { name = "scikit-learn", specifier = ">=1.6,<2" },
+    { name = "scipy", specifier = ">=1.14,<2" },
     { name = "torch", marker = "extra == 'molformer'", specifier = ">=2.6,<3", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "hansenkit", extra = "molformer" } },
     { name = "transformers", marker = "extra == 'molformer'", specifier = "==5.12.1" },
 ]
