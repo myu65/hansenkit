@@ -104,6 +104,28 @@ def material_lookup(args):
     print(json.dumps({"output": args.output, "status": report["status"], "rows": report["rows"]}))
 
 
+def formulation_lookup(args):
+    from .formulation_observations import FormulationObservationLookup, decode
+
+    path = Path(args.output)
+    if path.exists():
+        raise ValueError("Formulation evidence output exists; choose a fresh output file")
+    lookup = FormulationObservationLookup(args.data, args.review)
+    report = lookup.lookup(decode(Path(args.query).read_bytes()))
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as stream:
+        json.dump(report, stream, indent=2, ensure_ascii=False, allow_nan=False)
+    print(
+        json.dumps(
+            {
+                "status": report["status"],
+                "outcome_records": report["outcome_records"],
+                "formulations": report["formulations"],
+            }
+        )
+    )
+
+
 def fit_and_report(dataset, split, args, mode, head="ridge", encoder=None):
     encoder = encoder or configured_encoder(args)
     model = train_model(
@@ -369,6 +391,11 @@ def main(argv=None):
     material.add_argument("--material-id", required=True)
     material.add_argument("--solvent")
     material.add_argument("--output", required=True)
+    formulation = commands.add_parser(
+        "formulation-lookup", help="Read literal outcomes for exact reviewed formulation conditions"
+    )
+    for name in ("data", "review", "query", "output"):
+        formulation.add_argument("--" + name, required=True)
     train = commands.add_parser("train")
     add_training(train)
     train.add_argument("--mode", choices=("A", "B", "C"), default="A")
@@ -491,6 +518,8 @@ def main(argv=None):
             md_cached_inference(args)
         elif args.command == "material-lookup":
             material_lookup(args)
+        elif args.command == "formulation-lookup":
+            formulation_lookup(args)
         elif args.command in {"train", "compare"}:
             dataset = load_dataset(args.data, args.manifest)
             dataset.manifest.authorize("evaluate")

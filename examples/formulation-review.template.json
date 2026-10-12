@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "ledger_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "source_asset_path": "REPLACE_LOCAL_SOURCE_ASSET_PATH",
+  "source_asset_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "preparation_receipt_path": "REPLACE_LOCAL_PREPARATION_RECEIPT_PATH",
+  "preparation_receipt_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "classification_receipt_path": "REPLACE_LOCAL_CLASSIFICATION_RECEIPT_PATH",
+  "classification_receipt_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "source_sheets": {
+    "REPLACE_EXACT_SHEET_NAME": {"row_count": 1, "column_count": 1}
+  },
+  "source_grades": {
+    "REPLACE_EXACT_GRADE_ID": {
+      "source_grade_id": "REPLACE_EXACT_GRADE_ID",
+      "name_as_reported": "REPLACE_LITERAL_SOURCE_GRADE_NAME",
+      "nominal_eo_left": null,
+      "nominal_po": null,
+      "nominal_eo_right": null,
+      "block_counts_are_exact_DP": false,
+      "reported_mass": null,
+      "mn_g_mol": null,
+      "dispersity": null,
+      "end_groups_as_reported": null,
+      "source_supported_repeat_graph": null,
+      "exact_material_structure_qualified": false
+    }
+  },
+  "endpoints": {
+    "REPLACE_EXACT_ENDPOINT_ID": {
+      "name_as_reported": "REPLACE_LITERAL_ENDPOINT_NAME",
+      "definition_as_reported": null,
+      "literal_categories": ["REPLACE_LITERAL_SOURCE_CATEGORY"],
+      "source_outcome_cells": [
+        {"sheet_name": "REPLACE_EXACT_SHEET_NAME", "excel_row_one_based": 1, "excel_column_one_based": 1}
+      ]
+    }
+  },
+  "expected_outcome_records": 1,
+  "expected_formulations": 1,
+  "expected_polymer_present_formulations": 0,
+  "expected_zero_polymer_controls": 0,
+  "expected_unknown_polymer_presence": 1,
+  "source": "REPLACE_EXACT_SOURCE_VERSION",
+  "declared_license": "REPLACE_ASSET_SPECIFIC_LICENSE_EVIDENCE",
+  "permission_evidence": "REPLACE_REVIEWED_PERMISSION_EVIDENCE",
+  "approved_by": "REPLACE_REVIEWER",
+  "rights_status": "pending",
+  "audit_basis": "operator_assumption",
+  "use_scope": "scientific_private_noncommercial",
+  "allowed_role": "evaluation_only",
+  "read_only_lookup_allowed": false,
+  "training_allowed": false,
+  "derived_labels_allowed": false,
+  "derived_weights_allowed": false,
+  "hsp_inference_allowed": false,
+  "physical_accuracy_validated": false,
+  "public_redistribution": false
+}
