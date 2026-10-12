@@ -88,6 +88,22 @@ def md_cached_inference(args):
     )
 
 
+def material_lookup(args):
+    from .material_observations import SourceObservationLookup
+
+    path = Path(args.output)
+    if path.exists():
+        raise ValueError("Material evidence output exists; choose a fresh output file")
+    lookup = SourceObservationLookup(args.data, args.review)
+    report = lookup.lookup(
+        {"material_id": args.material_id, "solvent_name_as_reported": args.solvent}
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("x", encoding="utf-8") as stream:
+        json.dump(report, stream, indent=2, ensure_ascii=False, allow_nan=False)
+    print(json.dumps({"output": args.output, "status": report["status"], "rows": report["rows"]}))
+
+
 def fit_and_report(dataset, split, args, mode, head="ridge", encoder=None):
     encoder = encoder or configured_encoder(args)
     model = train_model(
@@ -345,6 +361,14 @@ def main(argv=None):
     md_infer.add_argument("--input", required=True)
     md_infer.add_argument("--output", required=True)
     md_infer.add_argument("--mode", choices=("A", "B", "C"), default="A")
+    material = commands.add_parser(
+        "material-lookup", help="Read reported observations for exact reviewed material grades"
+    )
+    material.add_argument("--data", required=True)
+    material.add_argument("--review", required=True)
+    material.add_argument("--material-id", required=True)
+    material.add_argument("--solvent")
+    material.add_argument("--output", required=True)
     train = commands.add_parser("train")
     add_training(train)
     train.add_argument("--mode", choices=("A", "B", "C"), default="A")
@@ -465,6 +489,8 @@ def main(argv=None):
             )
         elif args.command == "md-cohesion-predict":
             md_cached_inference(args)
+        elif args.command == "material-lookup":
+            material_lookup(args)
         elif args.command in {"train", "compare"}:
             dataset = load_dataset(args.data, args.manifest)
             dataset.manifest.authorize("evaluate")

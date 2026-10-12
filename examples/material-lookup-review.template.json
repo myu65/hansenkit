@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "sha256": "REPLACE_WITH_REVIEWED_LEDGER_SHA256",
+  "source_asset_path": "source-asset.local-only",
+  "source_asset_sha256": "REPLACE_WITH_ORIGINAL_ASSET_SHA256",
+  "preparation_review_path": "preparation-review.local-only.json",
+  "preparation_review_sha256": "REPLACE_WITH_PREPARATION_REVIEW_SHA256",
+  "source_members": {
+    "REPLACE_WITH_SOURCE_MEMBER": {
+      "row_count": 1,
+      "material_ids": ["REPLACE_WITH_EXACT_SOURCE_GRADE_ID"]
+    }
+  },
+  "material_ids": ["REPLACE_WITH_EXACT_SOURCE_GRADE_ID"],
+  "source": "REPLACE_WITH_PRIMARY_SOURCE_AND_EXACT_REVISION",
+  "source_license": "REPLACE_WITH_ASSET_SPECIFIC_LICENSE_AND_LIMITATIONS",
+  "permission_evidence": "PENDING: review source, preparation and exact local lookup use",
+  "approved_by": "PENDING",
+  "rights_status": "pending",
+  "audit_basis": "documented_permission",
+  "use_scope": "scientific_private_noncommercial",
+  "allowed_role": "evaluation_only",
+  "read_only_lookup_allowed": false,
+  "training_allowed": false,
+  "derived_labels_allowed": false,
+  "derived_weights_allowed": false,
+  "hsp_inference_allowed": false,
+  "public_redistribution": false
+}
