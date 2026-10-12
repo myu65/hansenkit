@@ -80,6 +80,13 @@
 
 ## M2 — Polymers and long-chain surfactants
 
+- [PolySolの系列分割による二値適合性学習](polymer-compatibility.md)を実行した。
+  全5,176予約とホモ／コポリマー系列を維持し、候補190観測のうち7カテゴリー・訓練73行でA/Bを学習。
+  別系列18観測では両方式がカテゴリー別の訓練割合に届かなかった。全80拒否も分母へ残した。
+  公開するのは元のMIT配列APIと自作テストで、外部資料・ローカルモデルは含めない。
+  次は材料の構造・条件を対応づけた資料と、新しい系列で構造表現の利点を検証する。
+  HSP3成分や実用的な高分子／活性剤の資格は未達。[#92](https://github.com/myu65/hansenkit/issues/92)。
+
 - [追加材料資料の実際の確認](polymer-scope-extension.md)でPolySol2,088観測と
   PolyChar64観測を準備した。Mn/末端/温度/二端構造が未確定な材料へ数値HSPを出さない。
   新しい隔離MDモデルは分散・電気2項のcomputed-referenceであり、δP/δHは分離しない。
