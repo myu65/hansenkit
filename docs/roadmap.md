@@ -80,6 +80,12 @@
 
 ## M2 — Polymers and long-chain surfactants
 
+- [活性剤の可溶化原表](surfactant-solubilization-intake.md)を全75点のローカル候補に整理した。
+  原画像と独立転記を照合し、計算による理想値・HSPiP値を除外、相対不確かさをそのまま保持した。
+  全件の保存復元と元条件での検索が通過。構造・系列分離と測定定義を確認するまでは学習しない。
+  実測HSP3成分の追加や通常の適用範囲拡張には数えない。
+  [#108](https://github.com/myu65/hansenkit/issues/108)。
+
 - [PMMAの原観測と未知単位の保存](pmma-source-observations.md)を実装した。
   既存のg/mol値を保ち、単位未確認のMwを原文・未知単位のまま保存復元できる。
   公式SIの1試料28溶媒観察はローカル評価候補だけとして全行読込み・CLI参照した。
