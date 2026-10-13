@@ -110,6 +110,13 @@
   次は材料・出典確認と当初の固定表現比較。高分子HSP3成分の実用資格は未達。
   [#98](https://github.com/myu65/hansenkit/issues/98)。
 
+- [高分子の固定構造表現B/C](polymer-fixed-embedding-comparison.md)を同じ共有系列分割で学習した。
+  Cは各候補採点の訓練側で4系列foldの残差と5系列foldの基底選択を作り直す。
+  単一δは系列等重みRMSEがA3.772からB2.176/C2.647へ改善したが、CEDは平均値基準に届かない。
+  少数の同じ参照評価を使う探索的比較で、768列のOOD・材料・測定系譜は未校正／未確認。
+  次は原単位・出典確認と、全対象系列を予約したうえでの密度等の補助学習の可否確認。
+  高分子・活性剤HSP3成分の実用資格は未達。[#100](https://github.com/myu65/hansenkit/issues/100)。
+
 - [追加材料資料の実際の確認](polymer-scope-extension.md)でPolySol2,088観測と
   PolyChar64観測を準備した。Mn/末端/温度/二端構造が未確定な材料へ数値HSPを出さない。
   新しい隔離MDモデルは分散・電気2項のcomputed-referenceであり、δP/δHは分離しない。
