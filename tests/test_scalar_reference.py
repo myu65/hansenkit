@@ -20,7 +20,7 @@ def limited_threads():
 
 
 def provenance(task="single_delta_total"):
-    return {
+    result = {
         "task": task,
         "source_unit": m.UNITS[task],
         "label_kind": "synthetic",
@@ -44,6 +44,17 @@ def provenance(task="single_delta_total"):
             "a" * 64,
         ),
     }
+    if task == "density":
+        result.update(
+            source_unit_review_status="approved",
+            source_unit_review_sha256="b" * 64,
+            whole_candidate_inventory_review_status="approved_local_known_candidates_only",
+            whole_candidate_inventory_review_sha256="c" * 64,
+            global_isolation_certificate_qualified=False,
+            target_count_kind="density_synthetic_only",
+            HSP_or_QM_training_count_increment=0,
+        )
+    return result
 
 
 def population():
@@ -56,7 +67,7 @@ def population():
 
 
 @pytest.mark.parametrize("kind", ["ridge", "rbf"])
-@pytest.mark.parametrize("task", ["single_delta_total", "CED"])
+@pytest.mark.parametrize("task", ["single_delta_total", "CED", "density"])
 def test_positive_roundtrip_source_units_and_copy_isolation(kind, task):
     x, y, groups = population()
     head = m.ScalarReferenceHead.fit(
@@ -129,6 +140,100 @@ def test_group_selection_rebuilds_training_only_and_held_poison_has_no_effect():
     assert report["held_labels_or_features_used"] is False
     assert [(r["kind"], r["alpha"]) for r in report["candidates"]] == list(m.GRID)
     assert report["training_indices"] == indices.tolist()
+
+
+def test_density_train_selected_reviews_counts_and_held_protocols_stay_separate():
+    class Outside:
+        def __array__(self, *_args, **_kwargs):
+            pytest.fail("Density held array protocol executed")
+
+        def __float__(self):
+            pytest.fail("Density held target converted")
+
+        def __str__(self):
+            pytest.fail("Density held family converted")
+
+    x, y, groups = population()
+    selected, report = m.fit_group_selected_scalar_reference(
+        x, y, groups, training_indices=np.arange(len(x)), provenance=provenance("density")
+    )
+    poisoned, repeated = m.fit_group_selected_scalar_reference(
+        x.tolist() + [Outside()],
+        y.tolist() + [Outside()],
+        groups.tolist() + [Outside()],
+        training_indices=np.arange(len(x)),
+        provenance=provenance("density"),
+    )
+    assert selected.state() == poisoned.state() and report == repeated
+    assert report["held_labels_or_features_used"] is False
+    assert selected.state()["provenance"]["target_count_kind"] == "density_synthetic_only"
+    assert selected.state()["provenance"]["HSP_or_QM_training_count_increment"] == 0
+
+
+@pytest.mark.parametrize(
+    "field,bad",
+    [
+        ("source_unit", "g/cm3"),
+        ("source_unit_review_status", "pending"),
+        ("source_unit_review_sha256", None),
+        ("whole_candidate_inventory_review_status", "approved"),
+        ("whole_candidate_inventory_review_sha256", " "),
+        ("global_isolation_certificate_qualified", True),
+        ("global_isolation_certificate_qualified", 0),
+        ("target_count_kind", "density_reference_auxiliary_only"),
+        ("HSP_or_QM_training_count_increment", False),
+        ("HSP_or_QM_training_count_increment", 1),
+        ("allowed_role", "evaluation_only"),
+        ("physical_accuracy_qualified", True),
+        ("default_predictor_enabled", True),
+    ],
+)
+def test_density_reviews_and_countkind_refuse_before_array_and_on_redigested_restore(field, bad):
+    class Unread:
+        def __array__(self, *_args, **_kwargs):
+            pytest.fail("Density arrays converted before source review")
+
+    declared = provenance("density")
+    declared[field] = bad
+    with pytest.raises(m.NumericalRefusal):
+        m.ScalarReferenceHead.fit(
+            Unread(), Unread(), Unread(), kind="ridge", alpha=1.0, provenance=declared
+        )
+    x, y, groups = population()
+    saved = m.ScalarReferenceHead.fit(
+        x, y, groups, kind="ridge", alpha=1.0, provenance=provenance("density")
+    ).state()
+    saved["provenance"][field] = bad
+    saved["state_digest"] = m._digest(saved)
+    with pytest.raises(m.NumericalRefusal):
+        m.ScalarReferenceHead.restore(saved)
+
+
+def test_density_reference_review_metadata_copy_and_private_state_namespace():
+    x, y, groups = population()
+    declared = provenance("density")
+    declared.update(
+        label_kind="published_reference_auxiliary",
+        authored_fixture_only=False,
+        allowed_role="source_specific_local_training",
+        target_count_kind="density_reference_auxiliary_only",
+    )
+    head = m.ScalarReferenceHead.fit(x, y, groups, kind="ridge", alpha=1.0, provenance=declared)
+    # These arrays are authored; only the metadata route simulates a reviewed reference caller.
+    declared["source_unit_review_sha256"] = "d" * 64
+    saved = head.state()
+    assert saved["provenance"]["source_unit_review_sha256"] == "b" * 64
+    assert saved["task"] == "scalar_reference_head"
+    restored = m.ScalarReferenceHead.restore(json.loads(json.dumps(saved)))
+    np.testing.assert_array_equal(head.predict(x), restored.predict(x))
+    assert restored.state()["provenance"]["whole_candidate_inventory_review_status"] == (
+        "approved_local_known_candidates_only"
+    )
+    assert restored.state()["provenance"]["global_isolation_certificate_qualified"] is False
+    saved["task"] = "polybench_density_reference_head"
+    saved["state_digest"] = m._digest(saved)
+    with pytest.raises(m.NumericalRefusal, match="schema"):
+        m.ScalarReferenceHead.restore(saved)
 
 
 @pytest.mark.parametrize("container", ["list", "object_ndarray"])

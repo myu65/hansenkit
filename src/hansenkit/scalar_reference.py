@@ -32,6 +32,7 @@ FEATURE_NAMES = tuple(f"heavy_element_fraction_Z{z}" for z in ELEMENTS) + (
 UNITS = {
     "single_delta_total": "source_declared_(J/cm3)^0.5",
     "CED": "source_declared_cal/cm3_cal_definition_unknown",
+    "density": "source_declared_g/cm3",
 }
 FALSE_FLAGS = (
     "public_redistribution_allowed",
@@ -102,6 +103,36 @@ def _provenance_check(provenance):
         _require(
             type(value) is str and len(value) == 64 and all(c in "0123456789abcdef" for c in value),
             "Exact declared provenance digests",
+        )
+    if provenance["task"] == "density":
+        _require(
+            provenance.get("source_unit_review_status") == "approved"
+            and provenance.get("whole_candidate_inventory_review_status")
+            == "approved_local_known_candidates_only",
+            "Density declared-unit and local candidate-inventory reviews",
+        )
+        for key in ("source_unit_review_sha256", "whole_candidate_inventory_review_sha256"):
+            value = provenance.get(key)
+            _require(
+                type(value) is str
+                and len(value) == 64
+                and all(c in "0123456789abcdef" for c in value),
+                "Exact density review digests",
+            )
+        _require(
+            provenance.get("global_isolation_certificate_qualified") is False,
+            "Local known-candidate review never certifies whole-source isolation",
+        )
+        expected_count = (
+            "density_synthetic_only"
+            if provenance["label_kind"] == "synthetic"
+            else "density_reference_auxiliary_only"
+        )
+        _require(
+            provenance.get("target_count_kind") == expected_count
+            and type(provenance.get("HSP_or_QM_training_count_increment")) is int
+            and provenance["HSP_or_QM_training_count_increment"] == 0,
+            "Density counts remain separate from HSP and quantum targets",
         )
 
 
@@ -441,9 +472,11 @@ class ScalarReferenceHead:
 
     Input columns follow ``FEATURE_NAMES``. Callers approve data/derived weights
     and isolate canonical, name and polymer families before supplying arrays.
-    Both source quantities have separate model provenance; CED calorie meaning
-    remains unknown. A saved digest checks integrity, not authenticity, rights
-    or original-target reconstruction. OOD is descriptive, not calibrated.
+    Scalar quantities have separate model provenance; CED calorie meaning remains
+    unknown. Density additionally needs declared-unit and local known-candidate
+    review declarations. They never certify unresolved whole-source isolation.
+    A saved digest checks integrity, not authenticity, rights or original-target
+    reconstruction. OOD is descriptive, not calibrated.
     """
 
     parameters: dict
