@@ -95,8 +95,21 @@ class ObservationReview(StrictModel):
 
 class ReportedWeight(StrictModel):
     kind: Literal["Mn", "Mw", "unspecified"]
-    value_g_mol: Number = Field(gt=0)
+    value_g_mol: Number | None = Field(default=None, gt=0)
+    value_as_reported: str | None = None
+    unit_as_reported: str | None = None
     method: str | None
+
+    @field_validator("value_as_reported", "unit_as_reported")
+    @classmethod
+    def source_literals(cls, value):
+        return _nonblank(value) if value is not None else None
+
+    @model_validator(mode="after")
+    def weight_evidence(self):
+        if self.value_g_mol is None and self.value_as_reported is None:
+            raise ValueError("A qualified g/mol value or a literal source report is required")
+        return self
 
 
 class MaterialObservation(StrictModel):

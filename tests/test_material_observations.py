@@ -5,8 +5,68 @@ from pathlib import Path
 import pytest
 
 from hansenkit.cli import main
-from hansenkit.material_observations import SourceObservationLookup
+from hansenkit.material_observations import ReportedWeight, SourceObservationLookup
 from hansenkit.provenance import file_hash
+
+
+def test_literal_unknown_weight_roundtrip_without_unit_conversion(evidence):
+    ledger, _, save, _, _, _, _ = evidence
+    weight = {
+        "kind": "Mw",
+        "value_as_reported": "AUTHORED 12,345",
+        "unit_as_reported": None,
+        "method": None,
+    }
+    ledger["records"][0]["reported_molecular_weight"] = weight
+    data, manifest = save()
+    row = SourceObservationLookup(data, manifest).lookup({"material_id": "fixture-grade-Mw1000"})[
+        "records"
+    ][0]
+    reported = row["reported_molecular_weight"]
+    assert reported == {**weight, "value_g_mol": None}
+    assert (
+        ReportedWeight.model_validate_json(
+            ReportedWeight.model_validate(reported).model_dump_json()
+        ).model_dump()
+        == reported
+    )
+    assert row["mn_g_mol"] is None
+    assert row["hsp_components"] is None and row["hsp_predictions"] is None
+
+
+def test_existing_normalized_weight_stays_qualified_without_literal():
+    weight = ReportedWeight(kind="Mn", value_g_mol=1234, method="authored method")
+    assert weight.value_g_mol == 1234
+    assert weight.value_as_reported is None and weight.unit_as_reported is None
+
+
+def test_literal_weight_unit_is_retained_without_automatic_normalization():
+    weight = ReportedWeight(
+        kind="unspecified",
+        value_as_reported="authored nominal 4.5",
+        unit_as_reported="source-specific unit",
+        method=None,
+    )
+    assert weight.value_g_mol is None
+    assert weight.unit_as_reported == "source-specific unit"
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {},
+        {"value_g_mol": None},
+        {"value_as_reported": " "},
+        {"value_as_reported": 1234},
+        {"value_as_reported": "authored", "unit_as_reported": " "},
+        {"value_g_mol": True},
+        {"value_g_mol": 0},
+        {"value_g_mol": float("inf")},
+    ],
+)
+def test_weight_requires_positive_qualified_value_or_nonblank_source_literal(changes):
+    with pytest.raises(ValueError):
+        ReportedWeight.model_validate({"kind": "Mw", "method": None, **changes})
 
 
 @pytest.fixture
