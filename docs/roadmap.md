@@ -80,6 +80,11 @@
 
 ## M2 — Polymers and long-chain surfactants
 
+- [活性剤の公称組成と原試料の確認](solubilization-source-qualification.md)で、原報6gradeの公称EO数と
+  メーカーの説明を照合した。現行製品のMnや掲載SMILESを2021年試料へ移さない。
+  Eq.1の混合媒体M2は未解決で、3分類は系列をまとめる候補だけ。公称薬物のPubChem照合は
+  既存HSP予約系列に一致し、75点は候補・評価専用のまま換算・学習しない。[#110](https://github.com/myu65/hansenkit/issues/110)。
+
 - [活性剤の可溶化原表](surfactant-solubilization-intake.md)を全75点のローカル候補に整理した。
   原画像と独立転記を照合し、計算による理想値・HSPiP値を除外、相対不確かさをそのまま保持した。
   全件の保存復元と元条件での検索が通過。構造・系列分離と測定定義を確認するまでは学習しない。
